@@ -8,6 +8,7 @@ SKIP_SHELL=0
 GIT_ACCOUNTS_MODE="ask"
 BREW_GROUPS_MODE="ask"
 BREW_GROUPS=""
+BREW_SECTIONS="apps shell modern logs code git network data containers cloud security media runtimes ai workflow"
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BREWFILE="$REPO_DIR/Brewfile"
@@ -16,6 +17,7 @@ STARSHIP_CONFIG="$REPO_DIR/config/starship/starship.toml"
 GIT_CONFIG="$REPO_DIR/config/git/gitconfig"
 GIT_ACCOUNT_SCRIPT="$REPO_DIR/scripts/git-accounts.sh"
 LEARN_GUIDE="$REPO_DIR/docs/LEARN.md"
+SELECTED_BREWFILE="$HOME/.config/dev-setup/Brewfile.selected"
 
 usage() {
   cat <<'USAGE'
@@ -64,7 +66,7 @@ parse_args() {
       --skip-brew) SKIP_BREW=1 ;;
       --all-brew)
         BREW_GROUPS_MODE="custom"
-        BREW_GROUPS="apps,shell,modern,logs,containers,workflow"
+        BREW_GROUPS="$(printf '%s' "$BREW_SECTIONS" | tr ' ' ',')"
         ;;
       --brew-groups)
         shift
@@ -104,7 +106,16 @@ Available Homebrew sections:
   shell       starship, fzf, zoxide, atuin, mise, direnv
   modern      eza, bat, fd, ripgrep, sd, jq, yq, dust, duf, git-delta
   logs        lnav, tailspin, btop, lazygit, yazi, tmux
-  containers  lazydocker, k9s
+  code        neovim, ast-grep, shellcheck, shfmt, actionlint, typos-cli
+  git         git-lfs, pre-commit, difftastic, git-filter-repo, jj
+  network     wget, doggo, gping, mtr, iperf3, nmap, bandwhich, trippy
+  data        duckdb, sqlite, miller, csvkit, xsv, jless, fx, visidata
+  containers  docker, docker-compose, colima, lazydocker, kubectl, helm, k9s
+  cloud       awscli, azure-cli, google-cloud-sdk, doctl, flyctl, opentofu
+  security    gitleaks, trufflehog, age, sops, cosign, syft, grype
+  media       ffmpeg, imagemagick, rclone, pandoc, poppler, sevenzip
+  runtimes    uv, bun, pnpm, deno
+  ai          ollama, llm, aichat, mods
   workflow    gh, just, gum, hyperfine, xh
 
 Examples:
@@ -116,7 +127,7 @@ GROUPS
 
 is_brew_group() {
   case "$1" in
-    apps|shell|modern|logs|containers|workflow|none) return 0 ;;
+    apps|shell|modern|logs|code|git|network|data|containers|cloud|security|media|runtimes|ai|workflow|none) return 0 ;;
     *) return 1 ;;
   esac
 }
@@ -127,14 +138,23 @@ section_title() {
     shell) printf 'Shell ergonomics\n' ;;
     modern) printf 'Modern Unix replacements\n' ;;
     logs) printf 'Logs, monitoring, and TUIs\n' ;;
+    code) printf 'Code editing and quality\n' ;;
+    git) printf 'Git extras\n' ;;
+    network) printf 'Network and API diagnostics\n' ;;
+    data) printf 'Data and file wrangling\n' ;;
     containers) printf 'Containers and Kubernetes\n' ;;
+    cloud) printf 'Cloud and infrastructure\n' ;;
+    security) printf 'Security and supply chain\n' ;;
+    media) printf 'Media and documents\n' ;;
+    runtimes) printf 'Language runtime helpers\n' ;;
+    ai) printf 'Local and CLI AI tools\n' ;;
     workflow) printf 'Developer workflow helpers\n' ;;
   esac
 }
 
 section_default_choice() {
   case "$1" in
-    containers) printf 'n\n' ;;
+    network|data|containers|cloud|security|media|runtimes|ai) printf 'n\n' ;;
     *) printf 'r\n' ;;
   esac
 }
@@ -182,10 +202,117 @@ brew:yazi|yazi|terminal file manager|Y
 brew:tmux|tmux|terminal session manager|Y
 ITEMS
       ;;
+    code)
+      cat <<'ITEMS'
+brew:neovim|neovim|terminal editor|N
+brew:tokei|tokei|code statistics|Y
+brew:ast-grep|ast-grep|AST-aware search and rewrite|Y
+brew:typos-cli|typos-cli|source code spell checker|Y
+brew:shellcheck|shellcheck|shell script linter|Y
+brew:shfmt|shfmt|shell formatter|Y
+brew:actionlint|actionlint|GitHub Actions linter|Y
+brew:hadolint|hadolint|Dockerfile linter|N
+brew:taplo|taplo|TOML formatter/linter|N
+brew:yamllint|yamllint|YAML linter|N
+brew:markdownlint-cli|markdownlint-cli|Markdown linter|N
+ITEMS
+      ;;
+    git)
+      cat <<'ITEMS'
+brew:git-lfs|git-lfs|large file support for Git|Y
+brew:pre-commit|pre-commit|manage Git hooks|Y
+brew:git-extras|git-extras|extra Git subcommands|N
+brew:git-filter-repo|git-filter-repo|rewrite Git history safely|Y
+brew:difftastic|difftastic|syntax-aware diff viewer|Y
+brew:jj|jj|Jujutsu version control|N
+ITEMS
+      ;;
+    network)
+      cat <<'ITEMS'
+brew:wget|wget|file downloader|Y
+brew:aria2|aria2|multi-protocol downloader|N
+brew:doggo|doggo|DNS lookup client|Y
+brew:gping|gping|ping with graph|Y
+brew:mtr|mtr|traceroute and ping combined|N
+brew:iperf3|iperf3|network throughput test|N
+brew:nmap|nmap|network scanner|N
+brew:bandwhich|bandwhich|bandwidth monitor|N
+brew:trippy|trippy|network diagnostic TUI|N
+ITEMS
+      ;;
+    data)
+      cat <<'ITEMS'
+brew:duckdb|duckdb|analytical SQL engine|Y
+brew:sqlite|sqlite|SQLite CLI|Y
+brew:miller|miller|CSV/JSON/TSV processor, command is mlr|Y
+brew:csvkit|csvkit|CSV toolkit|N
+brew:xsv|xsv|fast CSV toolkit|Y
+brew:jless|jless|JSON viewer|Y
+brew:fx|fx|JSON viewer/processor|Y
+brew:dasel|dasel|query JSON/YAML/TOML/XML|N
+brew:visidata|visidata|terminal data explorer|N
+ITEMS
+      ;;
     containers)
       cat <<'ITEMS'
+brew:docker|docker|Docker CLI|Y
+brew:docker-compose|docker-compose|Docker Compose CLI|Y
+brew:colima|colima|container runtime for macOS|Y
 brew:lazydocker|lazydocker|Docker TUI|Y
+brew:kubectl|kubectl|Kubernetes CLI|Y
+brew:helm|helm|Kubernetes package manager|Y
+brew:kubectx|kubectx|switch Kubernetes contexts/namespaces|Y
+brew:stern|stern|multi-pod log tailing|Y
 brew:k9s|k9s|Kubernetes TUI|Y
+brew:kind|kind|local Kubernetes clusters|N
+brew:helmfile|helmfile|declarative Helm releases|N
+ITEMS
+      ;;
+    cloud)
+      cat <<'ITEMS'
+brew:awscli|awscli|AWS CLI|N
+brew:azure-cli|azure-cli|Azure CLI|N
+brew:google-cloud-sdk|google-cloud-sdk|Google Cloud CLI|N
+brew:doctl|doctl|DigitalOcean CLI|N
+brew:flyctl|flyctl|Fly.io CLI|N
+brew:opentofu|opentofu|Terraform-compatible IaC tool|Y
+ITEMS
+      ;;
+    security)
+      cat <<'ITEMS'
+brew:gitleaks|gitleaks|secret scanner|Y
+brew:trufflehog|trufflehog|verified secret scanner|N
+brew:age|age|simple file encryption|Y
+brew:sops|sops|encrypted secrets files|Y
+brew:cosign|cosign|container signing and verification|N
+brew:syft|syft|SBOM generator|N
+brew:grype|grype|vulnerability scanner|N
+ITEMS
+      ;;
+    media)
+      cat <<'ITEMS'
+brew:ffmpeg|ffmpeg|audio/video conversion|Y
+brew:imagemagick|imagemagick|image conversion and editing|Y
+brew:rclone|rclone|cloud storage sync|N
+brew:pandoc|pandoc|document converter|Y
+brew:poppler|poppler|PDF utilities|Y
+brew:sevenzip|sevenzip|archive tool|Y
+ITEMS
+      ;;
+    runtimes)
+      cat <<'ITEMS'
+brew:uv|uv|fast Python package/project tool|Y
+brew:bun|bun|JavaScript runtime and package manager|N
+brew:pnpm|pnpm|JavaScript package manager|Y
+brew:deno|deno|JavaScript/TypeScript runtime|N
+ITEMS
+      ;;
+    ai)
+      cat <<'ITEMS'
+brew:ollama|ollama|local model runner|N
+brew:llm|llm|LLM CLI and plugin ecosystem|N
+brew:aichat|aichat|AI chat CLI|N
+brew:mods|mods|AI assistant for pipelines|N
 ITEMS
       ;;
     workflow)
@@ -349,7 +476,7 @@ select_brew_specs() {
   local groups
   local group
   local index=1
-  local total=6
+  local total
 
   if [ "$BREW_GROUPS_MODE" = "custom" ]; then
     groups="$(printf '%s' "$BREW_GROUPS" | tr ',' ' ')"
@@ -357,13 +484,16 @@ select_brew_specs() {
     printf '\nChoose Homebrew tools by section.\n' >&2
     printf 'Each section lets you pick recommended, all, skip, or custom.\n' >&2
 
-    for group in apps shell modern logs containers workflow; do
+    # shellcheck disable=SC2086
+    set -- $BREW_SECTIONS
+    total="$#"
+    for group in $BREW_SECTIONS; do
       select_brew_section "$group" "$index" "$total"
       index=$((index + 1))
     done
     return
   else
-    groups="apps shell modern logs workflow"
+    groups="apps shell modern logs code git workflow"
   fi
 
   selected=""
@@ -470,6 +600,12 @@ brew_bundle() {
   selected_specs="$(select_brew_specs)"
 
   if [ "$selected_specs" = "none" ] || [ -z "$selected_specs" ]; then
+    run mkdir -p "$(dirname "$SELECTED_BREWFILE")"
+    if [ "$DRY_RUN" -eq 1 ]; then
+      warn "Would write empty selected Brewfile to $SELECTED_BREWFILE"
+    else
+      printf '# Generated by install.sh\n# No Homebrew tools selected\n' > "$SELECTED_BREWFILE"
+    fi
     log "Skipping Homebrew bundle"
     return
   fi
@@ -477,6 +613,9 @@ brew_bundle() {
   tmp_file="$(mktemp)"
   write_selected_brewfile "$tmp_file" "$selected_specs"
   bundle_file="$tmp_file"
+
+  run mkdir -p "$(dirname "$SELECTED_BREWFILE")"
+  run cp "$bundle_file" "$SELECTED_BREWFILE"
 
   log "Installing selected Homebrew tools"
   run brew bundle --file "$bundle_file"

@@ -45,16 +45,29 @@ Everyday CLI:
 - `dust`, `duf`, `btop`
 - `lnav`, `tailspin`
 - `lazygit`, `lazydocker`, `k9s`, `yazi`, `tmux`
+- `neovim`, `ast-grep`, `shellcheck`, `shfmt`, `actionlint`, `typos-cli`
+- `git-lfs`, `pre-commit`, `difftastic`, `git-filter-repo`
+- `duckdb`, `sqlite`, `miller`, `xsv`, `jless`, `fx`
+- `gitleaks`, `trufflehog`, `age`, `sops`, `syft`, `grype`
 - `gh`, `just`, `gum`, `hyperfine`, `xh`
 
-Installer groups:
+Installer sections:
 
 ```text
 apps        Ghostty, Raycast, JetBrains Mono Nerd Font
 shell       starship, fzf, zoxide, atuin, mise, direnv
 modern      eza, bat, fd, ripgrep, sd, jq, yq, dust, duf, git-delta
 logs        lnav, tailspin, btop, lazygit, yazi, tmux
-containers  lazydocker, k9s
+code        neovim, ast-grep, shellcheck, shfmt, actionlint, typos-cli
+git         git-lfs, pre-commit, difftastic, git-filter-repo, jj
+network     wget, doggo, gping, mtr, iperf3, nmap, bandwhich, trippy
+data        duckdb, sqlite, miller, csvkit, xsv, jless, fx, visidata
+containers  docker, docker-compose, colima, lazydocker, kubectl, helm, k9s
+cloud       awscli, azure-cli, google-cloud-sdk, doctl, flyctl, opentofu
+security    gitleaks, trufflehog, age, sops, cosign, syft, grype
+media       ffmpeg, imagemagick, rclone, pandoc, poppler, sevenzip
+runtimes    uv, bun, pnpm, deno
+ai          ollama, llm, aichat, mods
 workflow    gh, just, gum, hyperfine, xh
 ```
 
@@ -151,6 +164,12 @@ config/starship/starship.toml    Prompt config
 config/git/gitconfig             Git aliases and delta config
 scripts/git-accounts.sh          Multi-account Git manager
 scripts/doctor.sh                Check installed tools
+```
+
+`install.sh` writes the selected package manifest to:
+
+```text
+~/.config/dev-setup/Brewfile.selected
 ```
 
 ## GitHub

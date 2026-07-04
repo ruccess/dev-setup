@@ -158,19 +158,28 @@ apps        앱: Ghostty, Raycast, JetBrains Mono Nerd Font
 shell       쉘 사용감: starship, fzf, zoxide, atuin, mise, direnv
 modern      기본 명령어 대체: eza, bat, fd, rg, jq/yq, disk helpers
 logs        로그/TUI: lnav, tailspin, btop, lazygit, yazi, tmux
-containers  Docker/Kubernetes: lazydocker, k9s
+code        코드 품질: neovim, ast-grep, shellcheck, shfmt, actionlint
+git         Git 확장: git-lfs, pre-commit, difftastic, git-filter-repo
+network     네트워크: wget, doggo, gping, mtr, iperf3, nmap, trippy
+data        데이터 처리: duckdb, sqlite, miller, xsv, jless, fx, visidata
+containers  Docker/Kubernetes: docker, colima, lazydocker, kubectl, helm, k9s
+cloud       클라우드/IaC: awscli, azure-cli, google-cloud-sdk, doctl, opentofu
+security    보안: gitleaks, trufflehog, age, sops, syft, grype
+media       미디어/문서: ffmpeg, imagemagick, pandoc, poppler, sevenzip
+runtimes    런타임 보조: uv, bun, pnpm, deno
+ai          AI CLI: ollama, llm, aichat, mods
 workflow    워크플로우: gh, just, gum, hyperfine, xh
 ```
 
-기본값은 대부분 `r`이고, Docker/Kubernetes 섹션인 `containers`만 기본값이 `n`입니다.
+기본값은 핵심 섹션만 `r`입니다. `network`, `data`, `containers`, `cloud`, `security`, `media`, `runtimes`, `ai`는 취향과 업무 환경을 많이 타서 기본값이 `n`입니다.
 
 예시:
 
 ```zsh
-./install.sh --brew-groups apps,shell,modern,logs,workflow
+./install.sh --brew-groups apps,shell,modern,logs,code,git,workflow
 ```
 
-Docker/Kubernetes를 안 쓰면 `containers`는 빼도 됩니다.
+Docker/Kubernetes를 안 쓰면 `containers`는 빼도 됩니다. AI 도구나 클라우드 CLI도 필요한 사람만 고르면 됩니다.
 
 ## 설치되는 CLI 도구
 
@@ -213,6 +222,40 @@ yazi        터미널 파일 매니저
 tmux        터미널 세션/창/패널 관리
 ```
 
+코드 품질/검색 도구:
+
+```text
+ast-grep        AST 기반 코드 검색/치환
+tokei           코드 라인/언어 통계
+typos-cli       코드 오타 검사
+shellcheck      shell script linter
+shfmt           shell script formatter
+actionlint      GitHub Actions linter
+hadolint        Dockerfile linter
+taplo           TOML formatter/linter
+yamllint        YAML linter
+markdownlint    Markdown linter
+```
+
+Git 확장:
+
+```text
+git-lfs          큰 파일 관리
+pre-commit      Git hook 관리
+difftastic      구문 인식 diff
+git-filter-repo Git history rewrite
+git-extras      추가 Git subcommand
+jj              Jujutsu version control
+```
+
+네트워크/데이터/보안 쪽은 필요한 경우 선택합니다:
+
+```text
+doggo, gping, trippy, nmap
+duckdb, miller, xsv, jless, fx
+gitleaks, trufflehog, age, sops, syft, grype
+```
+
 개발 워크플로우 보조 도구:
 
 ```text
@@ -231,6 +274,8 @@ xh          HTTP 요청 CLI
 ~/.config/dev-setup/dev-setup.zsh  -> config/zsh/dev-setup.zsh
 ~/.config/dev-setup/LEARN.md       -> docs/LEARN.md
 ~/.config/dev-setup/repo           -> 이 repo
+~/.config/dev-setup/Brewfile.selected
+                                      마지막으로 선택한 Homebrew 설치 목록
 ~/.config/starship.toml            -> config/starship/starship.toml
 ~/.local/bin/git-account           -> scripts/git-accounts.sh
 ```

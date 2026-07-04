@@ -1,45 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-commands=(
-  brew
-  git
-  git-account
-  gh
-  fzf
-  zoxide
-  atuin
-  starship
-  mise
-  direnv
-  eza
-  bat
-  fd
-  rg
-  jq
-  yq
-  lnav
-  tspin
-  btop
-  lazygit
-  lazydocker
-  k9s
-  yazi
-  dust
-  duf
-  hyperfine
-  just
-  gum
-  delta
-  tmux
-  xh
-)
-
 missing=0
+selected_brewfile="$HOME/.config/dev-setup/Brewfile.selected"
 
 printf 'dev-setup doctor\n\n'
 
-for cmd in "${commands[@]}"; do
+for cmd in brew git git-account; do
   if command -v "$cmd" >/dev/null 2>&1; then
     printf 'ok      %-12s %s\n' "$cmd" "$(command -v "$cmd")"
   else
@@ -50,18 +17,42 @@ done
 
 printf '\n'
 
-if [ -d /Applications/Ghostty.app ]; then
-  printf 'ok      %-12s %s\n' "Ghostty" "/Applications/Ghostty.app"
-else
-  printf 'missing %-12s\n' "Ghostty"
-  missing=1
-fi
+printf 'Selected Homebrew packages\n\n'
 
-if [ -d /Applications/Raycast.app ]; then
-  printf 'ok      %-12s %s\n' "Raycast" "/Applications/Raycast.app"
+if [ -f "$selected_brewfile" ]; then
+  package_count=0
+  while IFS= read -r line; do
+    case "$line" in
+      brew\ \"*\")
+        name="${line#brew \"}"
+        name="${name%%\"*}"
+        package_count=$((package_count + 1))
+        if brew list --formula "$name" >/dev/null 2>&1; then
+          printf 'ok      brew         %s\n' "$name"
+        else
+          printf 'missing brew         %s\n' "$name"
+          missing=1
+        fi
+        ;;
+      cask\ \"*\")
+        name="${line#cask \"}"
+        name="${name%%\"*}"
+        package_count=$((package_count + 1))
+        if brew list --cask "$name" >/dev/null 2>&1; then
+          printf 'ok      cask         %s\n' "$name"
+        else
+          printf 'missing cask         %s\n' "$name"
+          missing=1
+        fi
+        ;;
+    esac
+  done < "$selected_brewfile"
+
+  if [ "$package_count" -eq 0 ]; then
+    printf 'ok      %-12s no Homebrew tools selected\n' "brewfile"
+  fi
 else
-  printf 'missing %-12s\n' "Raycast"
-  missing=1
+  printf 'todo    %-12s run ./install.sh to create %s\n' "brewfile" "$selected_brewfile"
 fi
 
 printf '\nGit account configs\n\n'
