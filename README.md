@@ -12,6 +12,15 @@ cd path/to/dev-setup
 ./install.sh
 ```
 
+Choose what to install:
+
+```zsh
+./install.sh --list-brew-groups
+./install.sh --brew-groups apps,shell,modern
+./install.sh --all-brew
+./install.sh --brew-groups none
+```
+
 ## What It Installs
 
 Apps:
@@ -37,6 +46,17 @@ Everyday CLI:
 - `lnav`, `tailspin`
 - `lazygit`, `lazydocker`, `k9s`, `yazi`, `tmux`
 - `gh`, `just`, `gum`, `hyperfine`, `xh`
+
+Installer groups:
+
+```text
+apps        Ghostty, Raycast, JetBrains Mono Nerd Font
+shell       starship, fzf, zoxide, atuin, mise, direnv
+modern      eza, bat, fd, ripgrep, sd, jq, yq, dust, duf, git-delta
+logs        lnav, tailspin, btop, lazygit, yazi, tmux
+containers  lazydocker, k9s
+workflow    gh, just, gum, hyperfine, xh
+```
 
 ## Useful Commands
 

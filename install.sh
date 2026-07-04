@@ -6,6 +6,8 @@ NO_CASKS=0
 SKIP_BREW=0
 SKIP_SHELL=0
 GIT_ACCOUNTS_MODE="ask"
+BREW_GROUPS_MODE="ask"
+BREW_GROUPS=""
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BREWFILE="$REPO_DIR/Brewfile"
@@ -23,6 +25,11 @@ Options:
   --dry-run      Print actions without changing files
   --no-casks     Skip Homebrew cask apps
   --skip-brew    Skip Homebrew bundle install
+  --all-brew      Install all Homebrew groups without prompting
+  --brew-groups GROUPS
+                 Install comma-separated groups without prompting
+  --list-brew-groups
+                 Show available Homebrew groups
   --skip-shell   Skip zsh/config/git setup
   --git-accounts Configure Git accounts during install
   --skip-git-accounts
@@ -55,6 +62,23 @@ parse_args() {
       --dry-run) DRY_RUN=1 ;;
       --no-casks) NO_CASKS=1 ;;
       --skip-brew) SKIP_BREW=1 ;;
+      --all-brew)
+        BREW_GROUPS_MODE="custom"
+        BREW_GROUPS="apps,shell,modern,logs,containers,workflow"
+        ;;
+      --brew-groups)
+        shift
+        [ "$#" -gt 0 ] || {
+          printf 'Missing value for --brew-groups\n' >&2
+          exit 1
+        }
+        BREW_GROUPS_MODE="custom"
+        BREW_GROUPS="$1"
+        ;;
+      --list-brew-groups)
+        list_brew_groups
+        exit 0
+        ;;
       --skip-shell) SKIP_SHELL=1 ;;
       --git-accounts) GIT_ACCOUNTS_MODE="yes" ;;
       --skip-git-accounts) GIT_ACCOUNTS_MODE="no" ;;
@@ -69,6 +93,188 @@ parse_args() {
         ;;
     esac
     shift
+  done
+}
+
+list_brew_groups() {
+  cat <<'GROUPS'
+Available Homebrew groups:
+
+  apps        Ghostty, Raycast, JetBrains Mono Nerd Font
+  shell       starship, fzf, zoxide, atuin, mise, direnv
+  modern      eza, bat, fd, ripgrep, sd, jq, yq, dust, duf, git-delta
+  logs        lnav, tailspin, btop, lazygit, yazi, tmux
+  containers  lazydocker, k9s
+  workflow    gh, just, gum, hyperfine, xh
+
+Examples:
+  ./install.sh --brew-groups apps,shell,modern
+  ./install.sh --all-brew
+  ./install.sh --brew-groups none
+GROUPS
+}
+
+is_brew_group() {
+  case "$1" in
+    apps|shell|modern|logs|containers|workflow|none) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+ask_yes_no() {
+  local label="$1"
+  local default="${2:-Y}"
+  local answer
+  local suffix
+
+  if [ "$default" = "Y" ]; then
+    suffix="Y/n"
+  else
+    suffix="y/N"
+  fi
+
+  printf '%s [%s]: ' "$label" "$suffix" >&2
+  read -r answer
+  answer="${answer:-$default}"
+
+  case "$answer" in
+    Y|y|yes|YES) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+select_brew_groups() {
+  local selected=""
+  local groups
+  local group
+
+  if [ "$BREW_GROUPS_MODE" = "custom" ]; then
+    groups="$(printf '%s' "$BREW_GROUPS" | tr ',' ' ')"
+  elif [ -t 0 ] && [ -t 1 ]; then
+    printf '\nChoose Homebrew groups to install.\n' >&2
+    printf 'Press Enter to accept the default for each group.\n\n' >&2
+
+    ask_yes_no "Install apps?        Ghostty, Raycast, Nerd Font" "Y" && selected="$selected apps"
+    ask_yes_no "Install shell?       prompt, fuzzy finder, cd/history/runtime helpers" "Y" && selected="$selected shell"
+    ask_yes_no "Install modern?      eza, bat, fd, rg, jq/yq, disk helpers" "Y" && selected="$selected modern"
+    ask_yes_no "Install logs/TUI?    lnav, tailspin, btop, lazygit, yazi, tmux" "Y" && selected="$selected logs"
+    ask_yes_no "Install containers?  lazydocker, k9s" "N" && selected="$selected containers"
+    ask_yes_no "Install workflow?    gh, just, gum, hyperfine, xh" "Y" && selected="$selected workflow"
+
+    groups="$selected"
+  else
+    groups="apps shell modern logs containers workflow"
+  fi
+
+  selected=""
+  for group in $groups; do
+    if ! is_brew_group "$group"; then
+      printf 'Unknown Homebrew group: %s\n\n' "$group" >&2
+      list_brew_groups >&2
+      exit 1
+    fi
+
+    if [ "$group" = "none" ]; then
+      printf 'none\n'
+      return
+    fi
+
+    case " $selected " in
+      *" $group "*) ;;
+      *) selected="$selected $group" ;;
+    esac
+  done
+
+  selected="${selected# }"
+  printf '%s\n' "$selected"
+}
+
+append_brew_group() {
+  local output="$1"
+  local group="$2"
+
+  case "$group" in
+    apps)
+      {
+        printf '\n# Core launcher / terminal apps\n'
+        if [ "$NO_CASKS" -eq 0 ]; then
+          printf 'cask "ghostty"\n'
+          printf 'cask "raycast"\n'
+          printf 'cask "font-jetbrains-mono-nerd-font"\n'
+        else
+          printf '# casks skipped by --no-casks\n'
+        fi
+      } >> "$output"
+      ;;
+    shell)
+      {
+        printf '\n# Shell ergonomics\n'
+        printf 'brew "atuin"\n'
+        printf 'brew "direnv"\n'
+        printf 'brew "fzf"\n'
+        printf 'brew "mise"\n'
+        printf 'brew "starship"\n'
+        printf 'brew "zoxide"\n'
+      } >> "$output"
+      ;;
+    modern)
+      {
+        printf '\n# Modern Unix replacements\n'
+        printf 'brew "bat"\n'
+        printf 'brew "duf"\n'
+        printf 'brew "dust"\n'
+        printf 'brew "eza"\n'
+        printf 'brew "fd"\n'
+        printf 'brew "git-delta"\n'
+        printf 'brew "jq"\n'
+        printf 'brew "ripgrep"\n'
+        printf 'brew "sd"\n'
+        printf 'brew "yq"\n'
+      } >> "$output"
+      ;;
+    logs)
+      {
+        printf '\n# Logs, monitoring, and TUIs\n'
+        printf 'brew "btop"\n'
+        printf 'brew "lazygit"\n'
+        printf 'brew "lnav"\n'
+        printf 'brew "tailspin"\n'
+        printf 'brew "tmux"\n'
+        printf 'brew "yazi"\n'
+      } >> "$output"
+      ;;
+    containers)
+      {
+        printf '\n# Containers and Kubernetes\n'
+        printf 'brew "k9s"\n'
+        printf 'brew "lazydocker"\n'
+      } >> "$output"
+      ;;
+    workflow)
+      {
+        printf '\n# Developer workflow helpers\n'
+        printf 'brew "gh"\n'
+        printf 'brew "gum"\n'
+        printf 'brew "hyperfine"\n'
+        printf 'brew "just"\n'
+        printf 'brew "xh"\n'
+      } >> "$output"
+      ;;
+  esac
+}
+
+write_selected_brewfile() {
+  local output="$1"
+  local groups="$2"
+  local group
+
+  {
+    printf '# Generated by install.sh\n'
+    printf '# Selected groups:%s\n' "$groups"
+  } > "$output"
+
+  for group in $groups; do
+    append_brew_group "$output" "$group"
   done
 }
 
@@ -107,21 +313,25 @@ brew_bundle() {
 
   ensure_homebrew
 
-  local bundle_file="$BREWFILE"
-  local tmp_file=""
+  local selected_groups
+  local bundle_file
+  local tmp_file
 
-  if [ "$NO_CASKS" -eq 1 ]; then
-    tmp_file="$(mktemp)"
-    grep -v '^cask ' "$BREWFILE" > "$tmp_file"
-    bundle_file="$tmp_file"
+  selected_groups="$(select_brew_groups)"
+
+  if [ "$selected_groups" = "none" ] || [ -z "$selected_groups" ]; then
+    log "Skipping Homebrew bundle"
+    return
   fi
 
-  log "Installing Homebrew bundle"
+  tmp_file="$(mktemp)"
+  write_selected_brewfile "$tmp_file" "$selected_groups"
+  bundle_file="$tmp_file"
+
+  log "Installing Homebrew groups:$selected_groups"
   run brew bundle --file "$bundle_file"
 
-  if [ -n "$tmp_file" ]; then
-    rm -f "$tmp_file"
-  fi
+  rm -f "$tmp_file"
 }
 
 backup_path() {

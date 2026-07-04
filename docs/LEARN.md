@@ -37,6 +37,31 @@ devrepo
 ./install.sh --dry-run
 ```
 
+설치할 도구 묶음을 직접 고르고 싶으면:
+
+```zsh
+./install.sh --list-brew-groups
+./install.sh --brew-groups apps,shell,modern
+```
+
+전부 설치하려면:
+
+```zsh
+./install.sh --all-brew
+```
+
+추천 도구 설치 목록만 비우려면:
+
+```zsh
+./install.sh --brew-groups none
+```
+
+Homebrew 관련 작업 자체를 건너뛰고 설정만 적용하려면:
+
+```zsh
+./install.sh --skip-brew
+```
+
 현재 이 repo가 하는 일은 크게 세 가지입니다:
 
 1. Homebrew로 설치할 앱과 CLI 도구 목록을 관리합니다.
@@ -111,6 +136,27 @@ font-jetbrains-mono-nerd-font   터미널용 Nerd Font
 ```text
 Ghostty + Raycast + zsh + Starship + fzf + zoxide + atuin
 ```
+
+## 설치 묶음 선택
+
+`./install.sh`를 대화형으로 실행하면 어떤 묶음을 설치할지 물어봅니다.
+
+```text
+apps        앱: Ghostty, Raycast, JetBrains Mono Nerd Font
+shell       쉘 사용감: starship, fzf, zoxide, atuin, mise, direnv
+modern      기본 명령어 대체: eza, bat, fd, rg, jq/yq, disk helpers
+logs        로그/TUI: lnav, tailspin, btop, lazygit, yazi, tmux
+containers  Docker/Kubernetes: lazydocker, k9s
+workflow    워크플로우: gh, just, gum, hyperfine, xh
+```
+
+예시:
+
+```zsh
+./install.sh --brew-groups apps,shell,modern,logs,workflow
+```
+
+Docker/Kubernetes를 안 쓰면 `containers`는 빼도 됩니다.
 
 ## 설치되는 CLI 도구
 
