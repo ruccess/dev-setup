@@ -47,6 +47,7 @@ devrepo
 
 ```zsh
 ./install.sh --list-brew-groups
+./install.sh --list-tools
 ./install.sh --brew-groups apps,terminal,shell,modern
 ```
 
@@ -67,6 +68,23 @@ Homebrew 관련 작업 자체를 건너뛰고 설정만 적용하려면:
 ```zsh
 ./install.sh --skip-brew
 ```
+
+계정 이름이나 workspace 기본값을 바꾸고 싶으면:
+
+```zsh
+cp .env.example .env
+$EDITOR .env
+```
+
+예시:
+
+```zsh
+export DEV_SETUP_WORKSPACE_ROOT="$HOME/workspace"
+export DEV_SETUP_ACCOUNT_DEFAULTS="personal,work"
+export DEV_SETUP_ACCOUNT_COUNT="2"
+```
+
+`.env`는 Git에 올라가지 않고, `./menu.sh`와 `./install.sh`가 자동으로 읽습니다.
 
 현재 이 repo가 하는 일은 크게 네 가지입니다:
 
@@ -178,6 +196,12 @@ media       미디어/문서: ffmpeg, imagemagick, pandoc, poppler, sevenzip
 runtimes    런타임 보조: uv, bun, pnpm, deno
 ai          AI CLI: Claude Code, ollama, llm, aichat, mods
 workflow    워크플로우: gh, just, gum, hyperfine, xh
+```
+
+도구별 설명과 추천 여부를 스크립트로 확인:
+
+```zsh
+./install.sh --list-tools
 ```
 
 기본값은 핵심 섹션만 `r`입니다. `network`, `data`, `containers`, `cloud`, `security`, `media`, `runtimes`, `ai`는 취향과 업무 환경을 많이 타서 기본값이 `n`입니다.
@@ -382,8 +406,10 @@ dm
 install dry-run        설치 전 미리보기
 install interactive    전체 대화형 설치
 install recommended    핵심 추천 섹션 설치
+tool catalog           도구 설명/추천 여부 보기
 doctor                 설치 상태 점검
 Git accounts           Git 계정/SSH 설정
+GitHub CLI             gh 로그인/PR/workflow 확인
 Neovim profiles        LazyVim/AstroNvim/NvChad 관리
 Zellij dev workspace   개발 작업대 열기
 script explorer        repo의 스크립트를 읽고 help/run/editor 선택

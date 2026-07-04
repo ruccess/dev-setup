@@ -22,6 +22,17 @@ LEARN_GUIDE="$REPO_DIR/docs/LEARN.md"
 ZELLIJ_LAYOUT="$REPO_DIR/config/zellij/dev.kdl"
 SELECTED_BREWFILE="$HOME/.config/dev-setup/Brewfile.selected"
 
+load_repo_env() {
+  local env_file="$REPO_DIR/.env"
+
+  if [ -f "$env_file" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    . "$env_file"
+    set +a
+  fi
+}
+
 usage() {
   cat <<'USAGE'
 Usage: ./install.sh [options]
@@ -35,6 +46,7 @@ Options:
                  Install comma-separated groups without prompting
   --list-brew-groups
                  Show available Homebrew groups
+  --list-tools   Show all Homebrew tools with descriptions
   --skip-shell   Skip zsh/config/git setup
   --git-accounts Configure Git accounts during install
   --skip-git-accounts
@@ -84,6 +96,10 @@ parse_args() {
         list_brew_groups
         exit 0
         ;;
+      --list-tools)
+        list_brew_tools
+        exit 0
+        ;;
       --skip-shell) SKIP_SHELL=1 ;;
       --git-accounts) GIT_ACCOUNTS_MODE="yes" ;;
       --skip-git-accounts) GIT_ACCOUNTS_MODE="no" ;;
@@ -127,6 +143,31 @@ Examples:
   ./install.sh --all-brew
   ./install.sh --brew-groups none
 GROUPS
+}
+
+list_brew_tools() {
+  local group
+  local spec
+  local label
+  local description
+  local recommended
+  local kind
+
+  printf 'Available Homebrew tools\n'
+  printf 'Recommended: Y means included when the section default is recommended.\n\n'
+
+  for group in $BREW_SECTIONS; do
+    printf '%s\n' "$(section_title "$group")"
+    printf '  %-6s %-32s %-3s %s\n' "kind" "tool" "rec" "description"
+
+    while IFS='|' read -r spec label description recommended; do
+      [ -n "$spec" ] || continue
+      kind="${spec%%:*}"
+      printf '  %-6s %-32s %-3s %s\n' "$kind" "$label" "$recommended" "$description"
+    done < <(section_items "$group")
+
+    printf '\n'
+  done
 }
 
 is_brew_group() {
@@ -796,6 +837,7 @@ install_fzf_extras() {
 }
 
 main() {
+  load_repo_env
   parse_args "$@"
   brew_bundle
   install_fzf_extras

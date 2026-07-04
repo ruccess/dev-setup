@@ -19,6 +19,7 @@ description: Use this skill when working in a dev-setup repository to install, e
 ## 주요 파일
 
 ```text
+.env.example                    로컬 기본값 예시
 install.sh                       설치/링크/선택형 Homebrew bootstrap
 menu.sh                          루트 메뉴 wrapper
 Brewfile                         전체 Homebrew catalog
@@ -40,6 +41,8 @@ scripts/doctor.sh                설치 상태 점검
 ./menu.sh
 ```
 
+사용자가 계정 이름이나 workspace 기본값을 바꾸고 싶어하면 `.env.example`을 `.env`로 복사해서 수정하게 안내합니다. `.env`는 Git에 올리지 않습니다.
+
 먼저 dry-run을 실행합니다.
 
 ```zsh
@@ -56,6 +59,7 @@ scripts/doctor.sh                설치 상태 점검
 
 ```zsh
 ./install.sh --list-brew-groups
+./install.sh --list-tools
 ./install.sh --brew-groups apps,terminal,shell,modern,logs,code,git,workflow
 ```
 
@@ -88,6 +92,8 @@ network, data, containers, cloud, security, media, runtimes, ai
 ```
 
 `ai`에는 Claude Code cask가 포함됩니다. 필요할 때만 설치합니다.
+
+도구 설명이나 추천 여부를 물으면 `./install.sh --list-tools`를 먼저 확인합니다.
 
 ## Git 계정 관리
 
@@ -170,6 +176,7 @@ nvc .
 
 ```zsh
 bash -n install.sh scripts/doctor.sh scripts/git-accounts.sh scripts/neovim-profiles.sh
+bash -n menu.sh scripts/menu.sh
 zsh -n config/zsh/dev-setup.zsh
 git diff --check
 ./install.sh --dry-run --brew-groups terminal,code,ai --skip-git-accounts

@@ -4,6 +4,17 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+load_repo_env() {
+  local env_file="$REPO_DIR/.env"
+
+  if [ -f "$env_file" ]; then
+    set -a
+    # shellcheck disable=SC1090
+    . "$env_file"
+    set +a
+  fi
+}
+
 usage() {
   cat <<'USAGE'
 Usage: dev-setup-menu [options]
@@ -112,8 +123,10 @@ install dry-run
 install interactive
 install recommended
 list Homebrew sections
+tool catalog
 doctor
 Git accounts
+GitHub CLI
 Neovim profiles
 Zellij dev workspace
 open LEARN.md
@@ -170,6 +183,41 @@ action_git_accounts() {
       printf 'Account id: '
       read -r account
       [ -n "$account" ] && run_cmd "$REPO_DIR/scripts/git-accounts.sh" remote "$account" origin "$PWD"
+      ;;
+  esac
+}
+
+action_github_cli() {
+  local choice
+
+  if ! command -v gh >/dev/null 2>&1; then
+    printf 'gh is not installed yet. Install the workflow section first.\n' >&2
+    return 0
+  fi
+
+  choice="$(choose_one "GitHub CLI" \
+    "auth status" \
+    "login" \
+    "open current repo in browser" \
+    "list pull requests" \
+    "list workflows" \
+    "back")"
+
+  case "$choice" in
+    "auth status")
+      run_cmd gh auth status
+      ;;
+    "login")
+      run_cmd gh auth login
+      ;;
+    "open current repo in browser")
+      run_cmd gh repo view --web
+      ;;
+    "list pull requests")
+      run_cmd gh pr list
+      ;;
+    "list workflows")
+      run_cmd gh workflow list
       ;;
   esac
 }
@@ -313,8 +361,10 @@ main_menu() {
       "install interactive" \
       "install recommended" \
       "list Homebrew sections" \
+      "tool catalog" \
       "doctor" \
       "Git accounts" \
+      "GitHub CLI" \
       "Neovim profiles" \
       "Zellij dev workspace" \
       "open LEARN.md" \
@@ -327,8 +377,10 @@ main_menu() {
       "install interactive") action_install_interactive ;;
       "install recommended") action_install_recommended ;;
       "list Homebrew sections") run_cmd "$REPO_DIR/install.sh" --list-brew-groups ;;
+      "tool catalog") run_cmd "$REPO_DIR/install.sh" --list-tools ;;
       "doctor") run_cmd "$REPO_DIR/scripts/doctor.sh" ;;
       "Git accounts") action_git_accounts ;;
+      "GitHub CLI") action_github_cli ;;
       "Neovim profiles") action_neovim_profiles ;;
       "Zellij dev workspace") action_zellij ;;
       "open LEARN.md") open_file "$REPO_DIR/docs/LEARN.md" ;;
@@ -342,6 +394,8 @@ main_menu() {
 }
 
 main() {
+  load_repo_env
+
   case "${1:-}" in
     --list)
       list_actions
