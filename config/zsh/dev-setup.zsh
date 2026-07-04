@@ -37,6 +37,8 @@ command -v lazydocker >/dev/null 2>&1 && alias lzd='lazydocker'
 command -v k9s >/dev/null 2>&1 && alias k9='k9s'
 command -v git-account >/dev/null 2>&1 && alias ga='git-account'
 command -v nvim-profile >/dev/null 2>&1 && alias nvprof='nvim-profile'
+command -v dev-setup >/dev/null 2>&1 && alias devmenu='dev-setup'
+command -v dev-setup >/dev/null 2>&1 && alias dm='dev-setup'
 command -v zellij >/dev/null 2>&1 && alias zj='zellij'
 
 alias g='git'

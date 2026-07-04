@@ -6,7 +6,7 @@ selected_brewfile="$HOME/.config/dev-setup/Brewfile.selected"
 
 printf 'dev-setup doctor\n\n'
 
-for cmd in brew git git-account nvim-profile; do
+for cmd in brew git git-account nvim-profile dev-setup; do
   if command -v "$cmd" >/dev/null 2>&1; then
     printf 'ok      %-12s %s\n' "$cmd" "$(command -v "$cmd")"
   else

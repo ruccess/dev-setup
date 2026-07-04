@@ -20,6 +20,7 @@ description: Use this skill when working in the ruccess/dev-setup repository to 
 
 ```text
 install.sh                       설치/링크/선택형 Homebrew bootstrap
+menu.sh                          루트 메뉴 wrapper
 Brewfile                         전체 Homebrew catalog
 docs/LEARN.md                    한국어 사용 설명서
 config/zsh/dev-setup.zsh         zsh alias/function
@@ -27,10 +28,17 @@ config/zellij/dev.kdl            Zellij 개발 작업대 레이아웃
 config/git/gitconfig             공통 Git 설정
 scripts/git-accounts.sh          Git 계정/SSH alias 관리
 scripts/neovim-profiles.sh       LazyVim/AstroNvim/NvChad 프로필 관리
+scripts/menu.sh                  설치/점검/스크립트 선택 메뉴
 scripts/doctor.sh                설치 상태 점검
 ```
 
 ## 설치 작업 흐름
+
+사용자가 명령어 선택을 어려워하면 메뉴부터 실행합니다.
+
+```zsh
+./menu.sh
+```
 
 먼저 dry-run을 실행합니다.
 

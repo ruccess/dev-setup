@@ -8,6 +8,7 @@ This repo installs a focused CLI stack, links reusable shell config, and guides 
 
 ```zsh
 cd path/to/dev-setup
+./menu.sh
 ./install.sh --dry-run
 ./install.sh
 ```
@@ -98,6 +99,9 @@ dh              # open the dev-setup learning guide
 devhelp         # same as dh
 devhelp-edit    # edit the learning guide
 devrepo         # jump to this setup repo
+dev-setup       # open the interactive setup menu
+devmenu         # same as dev-setup
+dm              # same as dev-setup
 zjd             # open the Zellij dev workspace layout
 lg              # lazygit
 logs app.log    # open logs with lnav
@@ -168,6 +172,7 @@ git-account remote ruccess origin ~/workspace/ruccess/dev-setup
 ```text
 Brewfile                         Homebrew bundle
 SKILL.md                         AI assistant operating guide for this repo
+menu.sh                          Root wrapper for the interactive menu
 install.sh                       Idempotent installer
 docs/LEARN.md                    Learning guide and cheat sheet
 config/zsh/dev-setup.zsh         Shell aliases and integrations
@@ -176,6 +181,7 @@ config/starship/starship.toml    Prompt config
 config/git/gitconfig             Git aliases and delta config
 scripts/git-accounts.sh          Multi-account Git manager
 scripts/neovim-profiles.sh       LazyVim/AstroNvim/NvChad profile helper
+scripts/menu.sh                  Interactive setup/script menu
 scripts/doctor.sh                Check installed tools
 ```
 

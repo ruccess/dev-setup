@@ -31,6 +31,12 @@ devrepo
 ./install.sh
 ```
 
+무엇을 실행할지 메뉴로 고르고 싶으면:
+
+```zsh
+./menu.sh
+```
+
 설치 전에 어떤 일이 일어날지 미리 보고 싶으면:
 
 ```zsh
@@ -75,6 +81,7 @@ Homebrew 관련 작업 자체를 건너뛰고 설정만 적용하려면:
 
 ```zsh
 cd path/to/dev-setup
+./menu.sh
 ./install.sh
 source ~/.zshrc
 ./scripts/doctor.sh
@@ -299,6 +306,7 @@ mods        파이프라인에 붙여 쓰기 좋은 AI 도우미
 ~/.config/zellij/layouts/dev.kdl    -> config/zellij/dev.kdl
 ~/.local/bin/git-account           -> scripts/git-accounts.sh
 ~/.local/bin/nvim-profile          -> scripts/neovim-profiles.sh
+~/.local/bin/dev-setup             -> scripts/menu.sh
 ```
 
 그리고 `~/.zshrc`에는 아래 managed block 하나만 추가합니다.
@@ -338,6 +346,9 @@ dh              # 이 설명서 열기
 devhelp         # dh와 동일
 devhelp-edit    # 이 설명서 수정
 devrepo         # dev-setup repo로 이동
+dev-setup       # 선택 메뉴 열기
+devmenu         # dev-setup과 동일
+dm              # dev-setup과 동일
 zjd             # Zellij 개발 작업대 열기
 lg              # lazygit 실행
 logs app.log    # 로그 파일 열기
@@ -345,6 +356,37 @@ z workspace     # zoxide로 workspace 이동
 git-account     # Git 계정 관리
 nvprof          # Neovim 프로필 관리
 nvl             # LazyVim 프로필로 nvim 실행
+```
+
+## 선택 메뉴
+
+처음부터 명령어를 다 외우지 않아도 되게 메뉴 스크립트를 제공합니다.
+
+repo 안에서 실행:
+
+```zsh
+./menu.sh
+```
+
+설치 후 어디서든 실행:
+
+```zsh
+dev-setup
+devmenu
+dm
+```
+
+메뉴에서 할 수 있는 일:
+
+```text
+install dry-run        설치 전 미리보기
+install interactive    전체 대화형 설치
+install recommended    핵심 추천 섹션 설치
+doctor                 설치 상태 점검
+Git accounts           Git 계정/SSH 설정
+Neovim profiles        LazyVim/AstroNvim/NvChad 관리
+Zellij dev workspace   개발 작업대 열기
+script explorer        repo의 스크립트를 읽고 help/run/editor 선택
 ```
 
 ## 폴더 이동

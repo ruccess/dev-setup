@@ -17,6 +17,7 @@ STARSHIP_CONFIG="$REPO_DIR/config/starship/starship.toml"
 GIT_CONFIG="$REPO_DIR/config/git/gitconfig"
 GIT_ACCOUNT_SCRIPT="$REPO_DIR/scripts/git-accounts.sh"
 NVIM_PROFILE_SCRIPT="$REPO_DIR/scripts/neovim-profiles.sh"
+MENU_SCRIPT="$REPO_DIR/scripts/menu.sh"
 LEARN_GUIDE="$REPO_DIR/docs/LEARN.md"
 ZELLIJ_LAYOUT="$REPO_DIR/config/zellij/dev.kdl"
 SELECTED_BREWFILE="$HOME/.config/dev-setup/Brewfile.selected"
@@ -726,6 +727,7 @@ install_shell_configs() {
   link_file "$STARSHIP_CONFIG" "$HOME/.config/starship.toml"
   link_file "$GIT_ACCOUNT_SCRIPT" "$HOME/.local/bin/git-account"
   link_file "$NVIM_PROFILE_SCRIPT" "$HOME/.local/bin/nvim-profile"
+  link_file "$MENU_SCRIPT" "$HOME/.local/bin/dev-setup"
   link_file "$ZELLIJ_LAYOUT" "$HOME/.config/zellij/layouts/dev.kdl"
   install_zshrc_block
   install_git_include
