@@ -315,6 +315,18 @@ fi
 
 Git 설정도 `~/.gitconfig` 전체를 소유하지 않고, `include.path` 방식으로 이 repo의 공통 설정을 불러옵니다.
 
+## AI에게 맡길 때
+
+이 repo에는 [SKILL.md](../SKILL.md)가 있습니다.
+
+나중에 Claude Code, Codex, ChatGPT 같은 AI에게 이 repo를 맡길 때는 먼저 이렇게 말하면 됩니다.
+
+```text
+이 repo의 SKILL.md를 먼저 읽고 dev-setup을 이어서 작업해줘.
+```
+
+`SKILL.md`에는 설치 전에 dry-run을 먼저 돌리기, Git 계정/SSH 키를 조심해서 다루기, Neovim 설정을 바로 덮어쓰지 않기 같은 작업 규칙이 들어 있습니다.
+
 ## 매일 쓰는 명령어
 
 가장 자주 쓰게 될 명령:

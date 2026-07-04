@@ -167,6 +167,7 @@ git-account remote ruccess origin ~/workspace/ruccess/dev-setup
 
 ```text
 Brewfile                         Homebrew bundle
+SKILL.md                         AI assistant operating guide for this repo
 install.sh                       Idempotent installer
 docs/LEARN.md                    Learning guide and cheat sheet
 config/zsh/dev-setup.zsh         Shell aliases and integrations
