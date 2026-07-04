@@ -45,6 +45,10 @@ After installing and opening a new terminal:
 ```zsh
 ws              # jump to ~/workspace
 p               # fuzzy-pick a project under ~/workspace
+dh              # open the dev-setup learning guide
+devhelp         # same as dh
+devhelp-edit    # edit the learning guide
+devrepo         # jump to this setup repo
 lg              # lazygit
 logs app.log    # open logs with lnav
 tspin app.log   # highlight logs with tailspin
@@ -110,6 +114,7 @@ git-account remote work origin ~/workspace/wd-cron
 ```text
 Brewfile                         Homebrew bundle
 install.sh                       Idempotent installer
+docs/LEARN.md                    Learning guide and cheat sheet
 config/zsh/dev-setup.zsh         Shell aliases and integrations
 config/starship/starship.toml    Prompt config
 config/git/gitconfig             Git aliases and delta config

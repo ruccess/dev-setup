@@ -3,6 +3,8 @@
 export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 export EDITOR="${EDITOR:-vim}"
 export VISUAL="${VISUAL:-$EDITOR}"
+export DEV_SETUP_GUIDE="${DEV_SETUP_GUIDE:-$HOME/.config/dev-setup/LEARN.md}"
+export DEV_SETUP_REPO="${DEV_SETUP_REPO:-$HOME/.config/dev-setup/repo}"
 
 if [ -x /opt/homebrew/bin/brew ]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -36,6 +38,8 @@ command -v git-account >/dev/null 2>&1 && alias ga='git-account'
 
 alias g='git'
 alias reload!='source ~/.zshrc'
+alias dh='devhelp'
+alias devh='devhelp'
 
 ws() {
   cd "$HOME/workspace" || return
@@ -75,4 +79,27 @@ logs() {
 
 path() {
   printf '%s\n' "${(s/:/)PATH}"
+}
+
+devhelp() {
+  local guide="${1:-$DEV_SETUP_GUIDE}"
+
+  if [ ! -f "$guide" ]; then
+    printf 'dev-setup guide not found: %s\n' "$guide" >&2
+    return 1
+  fi
+
+  if command -v bat >/dev/null 2>&1; then
+    bat --paging=always "$guide"
+  else
+    less "$guide"
+  fi
+}
+
+devhelp-edit() {
+  "${EDITOR:-vim}" "${1:-$DEV_SETUP_GUIDE}"
+}
+
+devrepo() {
+  cd "$DEV_SETUP_REPO" || return
 }

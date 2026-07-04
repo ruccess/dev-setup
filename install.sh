@@ -12,6 +12,7 @@ ZSH_SNIPPET="$REPO_DIR/config/zsh/dev-setup.zsh"
 STARSHIP_CONFIG="$REPO_DIR/config/starship/starship.toml"
 GIT_CONFIG="$REPO_DIR/config/git/gitconfig"
 GIT_ACCOUNT_SCRIPT="$REPO_DIR/scripts/git-accounts.sh"
+LEARN_GUIDE="$REPO_DIR/docs/LEARN.md"
 
 usage() {
   cat <<'USAGE'
@@ -198,6 +199,8 @@ install_shell_configs() {
   [ "$SKIP_SHELL" -eq 1 ] && return
 
   link_file "$ZSH_SNIPPET" "$HOME/.config/dev-setup/dev-setup.zsh"
+  link_file "$LEARN_GUIDE" "$HOME/.config/dev-setup/LEARN.md"
+  link_file "$REPO_DIR" "$HOME/.config/dev-setup/repo"
   link_file "$STARSHIP_CONFIG" "$HOME/.config/starship.toml"
   link_file "$GIT_ACCOUNT_SCRIPT" "$HOME/.local/bin/git-account"
   install_zshrc_block
