@@ -5,6 +5,7 @@ export EDITOR="${EDITOR:-vim}"
 export VISUAL="${VISUAL:-$EDITOR}"
 export DEV_SETUP_GUIDE="${DEV_SETUP_GUIDE:-$HOME/.config/dev-setup/LEARN.md}"
 export DEV_SETUP_REPO="${DEV_SETUP_REPO:-$HOME/.config/dev-setup/repo}"
+export DEV_SETUP_ZELLIJ_LAYOUT="${DEV_SETUP_ZELLIJ_LAYOUT:-$HOME/.config/zellij/layouts/dev.kdl}"
 
 if [ -x /opt/homebrew/bin/brew ]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
@@ -35,11 +36,16 @@ command -v lazygit >/dev/null 2>&1 && alias lg='lazygit'
 command -v lazydocker >/dev/null 2>&1 && alias lzd='lazydocker'
 command -v k9s >/dev/null 2>&1 && alias k9='k9s'
 command -v git-account >/dev/null 2>&1 && alias ga='git-account'
+command -v nvim-profile >/dev/null 2>&1 && alias nvprof='nvim-profile'
+command -v zellij >/dev/null 2>&1 && alias zj='zellij'
 
 alias g='git'
 alias reload!='source ~/.zshrc'
 alias dh='devhelp'
 alias devh='devhelp'
+alias nvl='NVIM_APPNAME=lazyvim nvim'
+alias nva='NVIM_APPNAME=astronvim nvim'
+alias nvc='NVIM_APPNAME=nvchad nvim'
 
 ws() {
   cd "$HOME/workspace" || return
@@ -75,6 +81,22 @@ logs() {
   else
     less "$@"
   fi
+}
+
+zjd() {
+  local layout="${1:-$DEV_SETUP_ZELLIJ_LAYOUT}"
+
+  if ! command -v zellij >/dev/null 2>&1; then
+    printf 'zellij is not installed\n' >&2
+    return 1
+  fi
+
+  if [ ! -f "$layout" ]; then
+    printf 'zellij layout not found: %s\n' "$layout" >&2
+    return 1
+  fi
+
+  zellij --layout "$layout"
 }
 
 path() {

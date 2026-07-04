@@ -6,7 +6,7 @@ selected_brewfile="$HOME/.config/dev-setup/Brewfile.selected"
 
 printf 'dev-setup doctor\n\n'
 
-for cmd in brew git git-account; do
+for cmd in brew git git-account nvim-profile; do
   if command -v "$cmd" >/dev/null 2>&1; then
     printf 'ok      %-12s %s\n' "$cmd" "$(command -v "$cmd")"
   else
@@ -53,6 +53,16 @@ if [ -f "$selected_brewfile" ]; then
   fi
 else
   printf 'todo    %-12s run ./install.sh to create %s\n' "brewfile" "$selected_brewfile"
+fi
+
+printf '\nLinked configs\n\n'
+
+zellij_layout="$HOME/.config/zellij/layouts/dev.kdl"
+
+if [ -f "$zellij_layout" ]; then
+  printf 'ok      %-12s %s\n' "zellij" "$zellij_layout"
+else
+  printf 'todo    %-12s run ./install.sh to link %s\n' "zellij" "$zellij_layout"
 fi
 
 printf '\nGit account configs\n\n'

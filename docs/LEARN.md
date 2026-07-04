@@ -41,7 +41,7 @@ devrepo
 
 ```zsh
 ./install.sh --list-brew-groups
-./install.sh --brew-groups apps,shell,modern
+./install.sh --brew-groups apps,terminal,shell,modern
 ```
 
 전부 설치하려면:
@@ -62,11 +62,12 @@ Homebrew 관련 작업 자체를 건너뛰고 설정만 적용하려면:
 ./install.sh --skip-brew
 ```
 
-현재 이 repo가 하는 일은 크게 세 가지입니다:
+현재 이 repo가 하는 일은 크게 네 가지입니다:
 
 1. Homebrew로 설치할 앱과 CLI 도구 목록을 관리합니다.
 2. zsh, starship, git 설정을 링크합니다.
-3. Git 계정별 폴더와 SSH 설정을 입력받아 분리해서 관리합니다.
+3. Zellij 작업대 레이아웃과 Neovim 프로필 도우미를 제공합니다.
+4. Git 계정별 폴더와 SSH 설정을 입력받아 분리해서 관리합니다.
 
 ## 처음 실행
 
@@ -155,10 +156,11 @@ c      도구별로 하나씩 선택
 
 ```text
 apps        앱: Ghostty, Raycast, JetBrains Mono Nerd Font
+terminal    터미널 작업대: zellij, tmux
 shell       쉘 사용감: starship, fzf, zoxide, atuin, mise, direnv
 modern      기본 명령어 대체: eza, bat, fd, rg, jq/yq, disk helpers
-logs        로그/TUI: lnav, tailspin, btop, lazygit, yazi, tmux
-code        코드 품질: neovim, ast-grep, shellcheck, shfmt, actionlint
+logs        로그/TUI: lnav, tailspin, btop, lazygit, yazi
+code        코드 편집/품질: neovim, ast-grep, shellcheck, shfmt, actionlint
 git         Git 확장: git-lfs, pre-commit, difftastic, git-filter-repo
 network     네트워크: wget, doggo, gping, mtr, iperf3, nmap, trippy
 data        데이터 처리: duckdb, sqlite, miller, xsv, jless, fx, visidata
@@ -167,7 +169,7 @@ cloud       클라우드/IaC: awscli, azure-cli, google-cloud-sdk, doctl, opento
 security    보안: gitleaks, trufflehog, age, sops, syft, grype
 media       미디어/문서: ffmpeg, imagemagick, pandoc, poppler, sevenzip
 runtimes    런타임 보조: uv, bun, pnpm, deno
-ai          AI CLI: ollama, llm, aichat, mods
+ai          AI CLI: Claude Code, ollama, llm, aichat, mods
 workflow    워크플로우: gh, just, gum, hyperfine, xh
 ```
 
@@ -176,12 +178,19 @@ workflow    워크플로우: gh, just, gum, hyperfine, xh
 예시:
 
 ```zsh
-./install.sh --brew-groups apps,shell,modern,logs,code,git,workflow
+./install.sh --brew-groups apps,terminal,shell,modern,logs,code,git,workflow
 ```
 
 Docker/Kubernetes를 안 쓰면 `containers`는 빼도 됩니다. AI 도구나 클라우드 CLI도 필요한 사람만 고르면 됩니다.
 
 ## 설치되는 CLI 도구
+
+터미널 작업대를 만드는 도구:
+
+```text
+zellij     터미널 탭/패널/레이아웃 작업대
+tmux       오래 검증된 터미널 세션/창/패널 관리
+```
 
 쉘 사용감을 좋게 만드는 도구:
 
@@ -219,12 +228,12 @@ lazygit     Git 터미널 UI
 lazydocker  Docker 터미널 UI
 k9s         Kubernetes 터미널 UI
 yazi        터미널 파일 매니저
-tmux        터미널 세션/창/패널 관리
 ```
 
-코드 품질/검색 도구:
+코드 편집/품질/검색 도구:
 
 ```text
+neovim         터미널 편집기, 명령어는 nvim
 ast-grep        AST 기반 코드 검색/치환
 tokei           코드 라인/언어 통계
 typos-cli       코드 오타 검사
@@ -266,6 +275,16 @@ hyperfine   명령어 실행 시간 벤치마크
 xh          HTTP 요청 CLI
 ```
 
+AI CLI 도구:
+
+```text
+Claude Code 터미널 기반 AI 코딩 도우미, 명령어는 claude
+ollama      로컬 모델 실행
+llm         여러 LLM을 CLI에서 쓰는 도구
+aichat      터미널 AI 채팅
+mods        파이프라인에 붙여 쓰기 좋은 AI 도우미
+```
+
 ## 설정으로 바뀌는 것
 
 `install.sh`는 아래 파일들을 링크합니다.
@@ -277,7 +296,9 @@ xh          HTTP 요청 CLI
 ~/.config/dev-setup/Brewfile.selected
                                       마지막으로 선택한 Homebrew 설치 목록
 ~/.config/starship.toml            -> config/starship/starship.toml
+~/.config/zellij/layouts/dev.kdl    -> config/zellij/dev.kdl
 ~/.local/bin/git-account           -> scripts/git-accounts.sh
+~/.local/bin/nvim-profile          -> scripts/neovim-profiles.sh
 ```
 
 그리고 `~/.zshrc`에는 아래 managed block 하나만 추가합니다.
@@ -305,10 +326,13 @@ dh              # 이 설명서 열기
 devhelp         # dh와 동일
 devhelp-edit    # 이 설명서 수정
 devrepo         # dev-setup repo로 이동
+zjd             # Zellij 개발 작업대 열기
 lg              # lazygit 실행
 logs app.log    # 로그 파일 열기
 z workspace     # zoxide로 workspace 이동
 git-account     # Git 계정 관리
+nvprof          # Neovim 프로필 관리
+nvl             # LazyVim 프로필로 nvim 실행
 ```
 
 ## 폴더 이동
@@ -634,6 +658,14 @@ hyperfine 'npm test' 'pnpm test'
 
 ## TUI 도구
 
+터미널 작업대:
+
+```zsh
+zellij
+zj
+zjd
+```
+
 Git:
 
 ```zsh
@@ -666,6 +698,92 @@ yazi
 ```zsh
 tmux
 ```
+
+## Zellij 작업대
+
+처음에는 이렇게 나눠 쓰는 것을 추천합니다.
+
+```text
+Ghostty      터미널 앱
+Zellij       작업공간, 탭, 패널, 레이아웃
+Claude Code  AI 코딩 탭
+Neovim       코드 편집
+tmux         오래 돌릴 별도 세션, 서버 접속, 익숙한 팀 환경
+```
+
+개발 작업대를 열기:
+
+```zsh
+zjd
+```
+
+`zjd`는 아래 레이아웃을 엽니다.
+
+```text
+code    nvim + shell
+claude  Claude Code 전용 탭
+git     lazygit 탭
+tmux    tmux dev 세션
+logs    로그/쉘 탭
+```
+
+프로젝트 폴더에서 `zjd`를 실행하면 그 폴더를 기준으로 탭들이 열립니다.
+
+Claude Code가 아직 없다면 설치할 때 `ai` 섹션에서 고르거나 아래처럼 설치합니다.
+
+```zsh
+brew install --cask claude-code
+```
+
+Claude Code 실행:
+
+```zsh
+claude
+```
+
+## Neovim 프로필
+
+맞습니다. Neovim은 이미 세팅이 잘 된 배포판이 많습니다. 처음부터 모든 설정을 직접 만들기보다, 하나를 골라 익숙해진 뒤 필요한 부분만 바꾸는 편이 빠릅니다.
+
+추천 순서:
+
+```text
+LazyVim    가장 무난한 추천. IDE 느낌이 있고 확장하기 쉬움.
+AstroNvim  기능이 풍부하고 구조가 잘 잡힌 편.
+NvChad     빠르고 UI가 예쁨. 가볍게 시작하기 좋음.
+```
+
+이 repo는 기존 `~/.config/nvim`을 바로 덮어쓰지 않습니다. 대신 `NVIM_APPNAME`을 써서 여러 설정을 나란히 시험할 수 있게 합니다.
+
+프로필 목록 보기:
+
+```zsh
+nvprof list
+```
+
+LazyVim 설치:
+
+```zsh
+nvprof install lazyvim
+```
+
+LazyVim으로 현재 프로젝트 열기:
+
+```zsh
+nvl .
+```
+
+다른 프로필:
+
+```zsh
+nvprof install astronvim
+nva .
+
+nvprof install nvchad
+nvc .
+```
+
+기본 `nvim`으로 정착하고 싶다면 충분히 써본 뒤에 `~/.config/lazyvim` 같은 프로필 폴더를 `~/.config/nvim`으로 옮기면 됩니다.
 
 ## 프로젝트 명령어 관리
 

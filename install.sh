@@ -8,7 +8,7 @@ SKIP_SHELL=0
 GIT_ACCOUNTS_MODE="ask"
 BREW_GROUPS_MODE="ask"
 BREW_GROUPS=""
-BREW_SECTIONS="apps shell modern logs code git network data containers cloud security media runtimes ai workflow"
+BREW_SECTIONS="apps terminal shell modern logs code git network data containers cloud security media runtimes ai workflow"
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BREWFILE="$REPO_DIR/Brewfile"
@@ -16,7 +16,9 @@ ZSH_SNIPPET="$REPO_DIR/config/zsh/dev-setup.zsh"
 STARSHIP_CONFIG="$REPO_DIR/config/starship/starship.toml"
 GIT_CONFIG="$REPO_DIR/config/git/gitconfig"
 GIT_ACCOUNT_SCRIPT="$REPO_DIR/scripts/git-accounts.sh"
+NVIM_PROFILE_SCRIPT="$REPO_DIR/scripts/neovim-profiles.sh"
 LEARN_GUIDE="$REPO_DIR/docs/LEARN.md"
+ZELLIJ_LAYOUT="$REPO_DIR/config/zellij/dev.kdl"
 SELECTED_BREWFILE="$HOME/.config/dev-setup/Brewfile.selected"
 
 usage() {
@@ -103,9 +105,10 @@ list_brew_groups() {
 Available Homebrew sections:
 
   apps        Ghostty, Raycast, JetBrains Mono Nerd Font
+  terminal    zellij, tmux
   shell       starship, fzf, zoxide, atuin, mise, direnv
   modern      eza, bat, fd, ripgrep, sd, jq, yq, dust, duf, git-delta
-  logs        lnav, tailspin, btop, lazygit, yazi, tmux
+  logs        lnav, tailspin, btop, lazygit, yazi
   code        neovim, ast-grep, shellcheck, shfmt, actionlint, typos-cli
   git         git-lfs, pre-commit, difftastic, git-filter-repo, jj
   network     wget, doggo, gping, mtr, iperf3, nmap, bandwhich, trippy
@@ -115,11 +118,11 @@ Available Homebrew sections:
   security    gitleaks, trufflehog, age, sops, cosign, syft, grype
   media       ffmpeg, imagemagick, rclone, pandoc, poppler, sevenzip
   runtimes    uv, bun, pnpm, deno
-  ai          ollama, llm, aichat, mods
+  ai          Claude Code, ollama, llm, aichat, mods
   workflow    gh, just, gum, hyperfine, xh
 
 Examples:
-  ./install.sh --brew-groups apps,shell,modern
+  ./install.sh --brew-groups apps,terminal,shell,modern
   ./install.sh --all-brew
   ./install.sh --brew-groups none
 GROUPS
@@ -127,7 +130,7 @@ GROUPS
 
 is_brew_group() {
   case "$1" in
-    apps|shell|modern|logs|code|git|network|data|containers|cloud|security|media|runtimes|ai|workflow|none) return 0 ;;
+    apps|terminal|shell|modern|logs|code|git|network|data|containers|cloud|security|media|runtimes|ai|workflow|none) return 0 ;;
     *) return 1 ;;
   esac
 }
@@ -135,6 +138,7 @@ is_brew_group() {
 section_title() {
   case "$1" in
     apps) printf 'Apps\n' ;;
+    terminal) printf 'Terminal workspaces\n' ;;
     shell) printf 'Shell ergonomics\n' ;;
     modern) printf 'Modern Unix replacements\n' ;;
     logs) printf 'Logs, monitoring, and TUIs\n' ;;
@@ -168,6 +172,12 @@ cask:raycast|Raycast|launcher and command palette|Y
 cask:font-jetbrains-mono-nerd-font|JetBrains Mono Nerd Font|terminal font with icons|Y
 ITEMS
       ;;
+    terminal)
+      cat <<'ITEMS'
+brew:zellij|zellij|terminal workspace with tabs, panes, and layouts|Y
+brew:tmux|tmux|classic terminal session manager|Y
+ITEMS
+      ;;
     shell)
       cat <<'ITEMS'
 brew:starship|starship|fast prompt|Y
@@ -199,12 +209,11 @@ brew:tailspin|tailspin|log highlighter, command is tspin|Y
 brew:btop|btop|system monitor|Y
 brew:lazygit|lazygit|Git TUI|Y
 brew:yazi|yazi|terminal file manager|Y
-brew:tmux|tmux|terminal session manager|Y
 ITEMS
       ;;
     code)
       cat <<'ITEMS'
-brew:neovim|neovim|terminal editor|N
+brew:neovim|neovim|terminal editor, command is nvim|Y
 brew:tokei|tokei|code statistics|Y
 brew:ast-grep|ast-grep|AST-aware search and rewrite|Y
 brew:typos-cli|typos-cli|source code spell checker|Y
@@ -309,6 +318,7 @@ ITEMS
       ;;
     ai)
       cat <<'ITEMS'
+cask:claude-code|Claude Code|terminal-based AI coding assistant, command is claude|Y
 brew:ollama|ollama|local model runner|N
 brew:llm|llm|LLM CLI and plugin ecosystem|N
 brew:aichat|aichat|AI chat CLI|N
@@ -493,7 +503,7 @@ select_brew_specs() {
     done
     return
   else
-    groups="apps shell modern logs code git workflow"
+    groups="apps terminal shell modern logs code git workflow"
   fi
 
   selected=""
@@ -715,6 +725,8 @@ install_shell_configs() {
   link_file "$REPO_DIR" "$HOME/.config/dev-setup/repo"
   link_file "$STARSHIP_CONFIG" "$HOME/.config/starship.toml"
   link_file "$GIT_ACCOUNT_SCRIPT" "$HOME/.local/bin/git-account"
+  link_file "$NVIM_PROFILE_SCRIPT" "$HOME/.local/bin/nvim-profile"
+  link_file "$ZELLIJ_LAYOUT" "$HOME/.config/zellij/layouts/dev.kdl"
   install_zshrc_block
   install_git_include
 }

@@ -16,7 +16,7 @@ Choose what to install. Interactive mode walks through each section one at a tim
 
 ```zsh
 ./install.sh --list-brew-groups
-./install.sh --brew-groups apps,shell,modern
+./install.sh --brew-groups apps,terminal,shell,modern
 ./install.sh --all-brew
 ./install.sh --brew-groups none
 ```
@@ -38,26 +38,33 @@ Shell:
 - `mise` for runtime version management
 - `direnv` for per-project environment loading
 
+Terminal workspaces:
+
+- `zellij` for tabs, panes, sessions, and layouts
+- `tmux` for classic terminal session management
+
 Everyday CLI:
 
 - `eza`, `bat`, `fd`, `ripgrep`, `sd`
 - `jq`, `yq`
 - `dust`, `duf`, `btop`
 - `lnav`, `tailspin`
-- `lazygit`, `lazydocker`, `k9s`, `yazi`, `tmux`
+- `lazygit`, `lazydocker`, `k9s`, `yazi`
 - `neovim`, `ast-grep`, `shellcheck`, `shfmt`, `actionlint`, `typos-cli`
 - `git-lfs`, `pre-commit`, `difftastic`, `git-filter-repo`
 - `duckdb`, `sqlite`, `miller`, `xsv`, `jless`, `fx`
 - `gitleaks`, `trufflehog`, `age`, `sops`, `syft`, `grype`
+- `claude-code`, `ollama`, `llm`, `aichat`, `mods`
 - `gh`, `just`, `gum`, `hyperfine`, `xh`
 
 Installer sections:
 
 ```text
 apps        Ghostty, Raycast, JetBrains Mono Nerd Font
+terminal    zellij, tmux
 shell       starship, fzf, zoxide, atuin, mise, direnv
 modern      eza, bat, fd, ripgrep, sd, jq, yq, dust, duf, git-delta
-logs        lnav, tailspin, btop, lazygit, yazi, tmux
+logs        lnav, tailspin, btop, lazygit, yazi
 code        neovim, ast-grep, shellcheck, shfmt, actionlint, typos-cli
 git         git-lfs, pre-commit, difftastic, git-filter-repo, jj
 network     wget, doggo, gping, mtr, iperf3, nmap, bandwhich, trippy
@@ -67,7 +74,7 @@ cloud       awscli, azure-cli, google-cloud-sdk, doctl, flyctl, opentofu
 security    gitleaks, trufflehog, age, sops, cosign, syft, grype
 media       ffmpeg, imagemagick, rclone, pandoc, poppler, sevenzip
 runtimes    uv, bun, pnpm, deno
-ai          ollama, llm, aichat, mods
+ai          Claude Code, ollama, llm, aichat, mods
 workflow    gh, just, gum, hyperfine, xh
 ```
 
@@ -91,12 +98,15 @@ dh              # open the dev-setup learning guide
 devhelp         # same as dh
 devhelp-edit    # edit the learning guide
 devrepo         # jump to this setup repo
+zjd             # open the Zellij dev workspace layout
 lg              # lazygit
 logs app.log    # open logs with lnav
 tspin app.log   # highlight logs with tailspin
 z workspace     # jump with zoxide
 atuin search    # search shell history
 git-account     # manage Welda/Ruccess Git accounts
+nvprof          # manage Neovim starter profiles
+nvl             # run nvim with the LazyVim profile
 ```
 
 ## Git Accounts
@@ -160,9 +170,11 @@ Brewfile                         Homebrew bundle
 install.sh                       Idempotent installer
 docs/LEARN.md                    Learning guide and cheat sheet
 config/zsh/dev-setup.zsh         Shell aliases and integrations
+config/zellij/dev.kdl            Zellij dev workspace layout
 config/starship/starship.toml    Prompt config
 config/git/gitconfig             Git aliases and delta config
 scripts/git-accounts.sh          Multi-account Git manager
+scripts/neovim-profiles.sh       LazyVim/AstroNvim/NvChad profile helper
 scripts/doctor.sh                Check installed tools
 ```
 

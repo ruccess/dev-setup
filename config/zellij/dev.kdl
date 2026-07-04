@@ -1,0 +1,41 @@
+layout {
+    default_tab_template {
+        pane size=1 borderless=true {
+            plugin location="zellij:tab-bar"
+        }
+        children
+        pane size=2 borderless=true {
+            plugin location="zellij:status-bar"
+        }
+    }
+
+    tab name="code" focus=true split_direction="vertical" {
+        pane name="nvim" command="zsh" size="70%" {
+            args "-lc" "command -v nvim >/dev/null 2>&1 && nvim . || { echo 'Neovim is not installed yet.'; echo 'Install it from the code section or run: brew install neovim'; exec zsh -l; }"
+        }
+        pane name="shell"
+    }
+
+    tab name="claude" {
+        pane name="claude-code" command="zsh" {
+            args "-lc" "command -v claude >/dev/null 2>&1 && claude || { echo 'Claude Code is not installed yet.'; echo 'Install it from the ai section or run: brew install --cask claude-code'; exec zsh -l; }"
+        }
+    }
+
+    tab name="git" {
+        pane name="lazygit" command="zsh" {
+            args "-lc" "command -v lazygit >/dev/null 2>&1 && lazygit || { git status; exec zsh -l; }"
+        }
+    }
+
+    tab name="tmux" {
+        pane name="tmux-dev" command="zsh" {
+            args "-lc" "command -v tmux >/dev/null 2>&1 && tmux new-session -A -s dev || { echo 'tmux is not installed yet.'; echo 'Install it from the terminal section or run: brew install tmux'; exec zsh -l; }"
+        }
+    }
+
+    tab name="logs" split_direction="vertical" {
+        pane name="logs"
+        pane name="shell"
+    }
+}

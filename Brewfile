@@ -6,6 +6,10 @@ cask "ghostty"
 cask "raycast"
 cask "font-jetbrains-mono-nerd-font"
 
+# Terminal workspaces
+brew "tmux"
+brew "zellij"
+
 # Shell ergonomics
 brew "atuin"
 brew "direnv"
@@ -31,7 +35,6 @@ brew "btop"
 brew "lazygit"
 brew "lnav"
 brew "tailspin"
-brew "tmux"
 brew "yazi"
 
 # Code editing and quality
@@ -122,6 +125,7 @@ brew "pnpm"
 brew "uv"
 
 # Local and CLI AI tools
+cask "claude-code"
 brew "aichat"
 brew "llm"
 brew "mods"
