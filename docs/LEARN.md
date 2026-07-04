@@ -37,7 +37,7 @@ devrepo
 ./install.sh --dry-run
 ```
 
-설치할 도구 묶음을 직접 고르고 싶으면:
+설치할 도구 섹션을 직접 고르고 싶으면:
 
 ```zsh
 ./install.sh --list-brew-groups
@@ -139,7 +139,19 @@ Ghostty + Raycast + zsh + Starship + fzf + zoxide + atuin
 
 ## 설치 묶음 선택
 
-`./install.sh`를 대화형으로 실행하면 어떤 묶음을 설치할지 물어봅니다.
+`./install.sh`를 대화형으로 실행하면 섹션을 하나씩 보여줍니다.
+
+각 섹션에서 선택할 수 있는 값:
+
+```text
+Enter  기본값 선택
+r      추천 도구 설치
+a      섹션 전체 설치
+n      이 섹션 건너뛰기
+c      도구별로 하나씩 선택
+```
+
+섹션 목록:
 
 ```text
 apps        앱: Ghostty, Raycast, JetBrains Mono Nerd Font
@@ -149,6 +161,8 @@ logs        로그/TUI: lnav, tailspin, btop, lazygit, yazi, tmux
 containers  Docker/Kubernetes: lazydocker, k9s
 workflow    워크플로우: gh, just, gum, hyperfine, xh
 ```
+
+기본값은 대부분 `r`이고, Docker/Kubernetes 섹션인 `containers`만 기본값이 `n`입니다.
 
 예시:
 

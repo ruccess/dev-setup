@@ -12,7 +12,7 @@ cd path/to/dev-setup
 ./install.sh
 ```
 
-Choose what to install:
+Choose what to install. Interactive mode walks through each section one at a time. Non-interactive mode can select whole sections:
 
 ```zsh
 ./install.sh --list-brew-groups
@@ -56,6 +56,15 @@ modern      eza, bat, fd, ripgrep, sd, jq, yq, dust, duf, git-delta
 logs        lnav, tailspin, btop, lazygit, yazi, tmux
 containers  lazydocker, k9s
 workflow    gh, just, gum, hyperfine, xh
+```
+
+Inside interactive mode, each section supports:
+
+```text
+r  recommended
+a  all
+n  skip
+c  custom per tool
 ```
 
 ## Useful Commands

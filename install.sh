@@ -98,7 +98,7 @@ parse_args() {
 
 list_brew_groups() {
   cat <<'GROUPS'
-Available Homebrew groups:
+Available Homebrew sections:
 
   apps        Ghostty, Raycast, JetBrains Mono Nerd Font
   shell       starship, fzf, zoxide, atuin, mise, direnv
@@ -121,6 +121,93 @@ is_brew_group() {
   esac
 }
 
+section_title() {
+  case "$1" in
+    apps) printf 'Apps\n' ;;
+    shell) printf 'Shell ergonomics\n' ;;
+    modern) printf 'Modern Unix replacements\n' ;;
+    logs) printf 'Logs, monitoring, and TUIs\n' ;;
+    containers) printf 'Containers and Kubernetes\n' ;;
+    workflow) printf 'Developer workflow helpers\n' ;;
+  esac
+}
+
+section_default_choice() {
+  case "$1" in
+    containers) printf 'n\n' ;;
+    *) printf 'r\n' ;;
+  esac
+}
+
+section_items() {
+  case "$1" in
+    apps)
+      cat <<'ITEMS'
+cask:ghostty|Ghostty|fast terminal app|Y
+cask:raycast|Raycast|launcher and command palette|Y
+cask:font-jetbrains-mono-nerd-font|JetBrains Mono Nerd Font|terminal font with icons|Y
+ITEMS
+      ;;
+    shell)
+      cat <<'ITEMS'
+brew:starship|starship|fast prompt|Y
+brew:fzf|fzf|fuzzy finder|Y
+brew:zoxide|zoxide|smarter cd|Y
+brew:atuin|atuin|searchable shell history|Y
+brew:mise|mise|runtime version manager|Y
+brew:direnv|direnv|per-project env loader|Y
+ITEMS
+      ;;
+    modern)
+      cat <<'ITEMS'
+brew:eza|eza|ls replacement|Y
+brew:bat|bat|cat with syntax highlighting|Y
+brew:fd|fd|find replacement|Y
+brew:ripgrep|ripgrep|grep replacement, command is rg|Y
+brew:sd|sd|simple string replacement|Y
+brew:jq|jq|JSON processor|Y
+brew:yq|yq|YAML/JSON/XML processor|Y
+brew:dust|dust|disk usage viewer|Y
+brew:duf|duf|disk free viewer|Y
+brew:git-delta|git-delta|better git diff pager|Y
+ITEMS
+      ;;
+    logs)
+      cat <<'ITEMS'
+brew:lnav|lnav|log viewer|Y
+brew:tailspin|tailspin|log highlighter, command is tspin|Y
+brew:btop|btop|system monitor|Y
+brew:lazygit|lazygit|Git TUI|Y
+brew:yazi|yazi|terminal file manager|Y
+brew:tmux|tmux|terminal session manager|Y
+ITEMS
+      ;;
+    containers)
+      cat <<'ITEMS'
+brew:lazydocker|lazydocker|Docker TUI|Y
+brew:k9s|k9s|Kubernetes TUI|Y
+ITEMS
+      ;;
+    workflow)
+      cat <<'ITEMS'
+brew:gh|gh|GitHub CLI|Y
+brew:just|just|project command runner|Y
+brew:gum|gum|interactive shell script UI|Y
+brew:hyperfine|hyperfine|command benchmarker|Y
+brew:xh|xh|HTTP client|Y
+ITEMS
+      ;;
+  esac
+}
+
+read_from_tty() {
+  if [ -r /dev/tty ]; then
+    read -r "$1" < /dev/tty
+  else
+    read -r "$1"
+  fi
+}
+
 ask_yes_no() {
   local label="$1"
   local default="${2:-Y}"
@@ -134,7 +221,7 @@ ask_yes_no() {
   fi
 
   printf '%s [%s]: ' "$label" "$suffix" >&2
-  read -r answer
+  read_from_tty answer
   answer="${answer:-$default}"
 
   case "$answer" in
@@ -143,139 +230,202 @@ ask_yes_no() {
   esac
 }
 
-select_brew_groups() {
+print_section_items() {
+  local group="$1"
+  local i=1
+  local spec
+  local label
+  local description
+  local recommended
+
+  while IFS='|' read -r spec label description recommended; do
+    [ -n "$spec" ] || continue
+    printf '  %s. %-28s %s\n' "$i" "$label" "$description" >&2
+    i=$((i + 1))
+  done < <(section_items "$group")
+}
+
+emit_section_recommended() {
+  local group="$1"
+  local spec
+  local label
+  local description
+  local recommended
+
+  while IFS='|' read -r spec label description recommended; do
+    [ -n "$spec" ] || continue
+    [ "$recommended" = "Y" ] && printf '%s\n' "$spec"
+  done < <(section_items "$group")
+}
+
+emit_section_all() {
+  local group="$1"
+  local spec
+  local label
+  local description
+  local recommended
+
+  while IFS='|' read -r spec label description recommended; do
+    [ -n "$spec" ] || continue
+    printf '%s\n' "$spec"
+  done < <(section_items "$group")
+}
+
+emit_section_custom() {
+  local group="$1"
+  local spec
+  local label
+  local description
+  local recommended
+
+  while IFS='|' read -r spec label description recommended; do
+    [ -n "$spec" ] || continue
+    if ask_yes_no "  Install $label? $description" "$recommended"; then
+      printf '%s\n' "$spec"
+    fi
+  done < <(section_items "$group")
+}
+
+select_brew_section() {
+  local group="$1"
+  local index="$2"
+  local total="$3"
+  local default_choice
+  local choice
+
+  default_choice="$(section_default_choice "$group")"
+
+  printf '\n[%s/%s] %s\n' "$index" "$total" "$(section_title "$group")" >&2
+  print_section_items "$group"
+  printf '\n' >&2
+
+  while true; do
+    printf 'Choose: Enter=%s, r=recommended, a=all, n=skip, c=custom: ' "$default_choice" >&2
+    read_from_tty choice
+    choice="${choice:-$default_choice}"
+
+    case "$choice" in
+      r|R|recommended)
+        emit_section_recommended "$group"
+        return
+        ;;
+      a|A|all)
+        emit_section_all "$group"
+        return
+        ;;
+      n|N|none|skip)
+        return
+        ;;
+      c|C|custom)
+        emit_section_custom "$group"
+        return
+        ;;
+      *)
+        warn "Choose r, a, n, or c"
+        ;;
+    esac
+  done
+}
+
+emit_group_specs() {
+  local group="$1"
+
+  if ! is_brew_group "$group"; then
+    printf 'Unknown Homebrew section: %s\n\n' "$group" >&2
+    list_brew_groups >&2
+    exit 1
+  fi
+
+  if [ "$group" = "none" ]; then
+    printf 'none\n'
+    return
+  fi
+
+  emit_section_all "$group"
+}
+
+select_brew_specs() {
   local selected=""
   local groups
   local group
+  local index=1
+  local total=6
 
   if [ "$BREW_GROUPS_MODE" = "custom" ]; then
     groups="$(printf '%s' "$BREW_GROUPS" | tr ',' ' ')"
-  elif [ -t 0 ] && [ -t 1 ]; then
-    printf '\nChoose Homebrew groups to install.\n' >&2
-    printf 'Press Enter to accept the default for each group.\n\n' >&2
+  elif [ -t 0 ]; then
+    printf '\nChoose Homebrew tools by section.\n' >&2
+    printf 'Each section lets you pick recommended, all, skip, or custom.\n' >&2
 
-    ask_yes_no "Install apps?        Ghostty, Raycast, Nerd Font" "Y" && selected="$selected apps"
-    ask_yes_no "Install shell?       prompt, fuzzy finder, cd/history/runtime helpers" "Y" && selected="$selected shell"
-    ask_yes_no "Install modern?      eza, bat, fd, rg, jq/yq, disk helpers" "Y" && selected="$selected modern"
-    ask_yes_no "Install logs/TUI?    lnav, tailspin, btop, lazygit, yazi, tmux" "Y" && selected="$selected logs"
-    ask_yes_no "Install containers?  lazydocker, k9s" "N" && selected="$selected containers"
-    ask_yes_no "Install workflow?    gh, just, gum, hyperfine, xh" "Y" && selected="$selected workflow"
-
-    groups="$selected"
+    for group in apps shell modern logs containers workflow; do
+      select_brew_section "$group" "$index" "$total"
+      index=$((index + 1))
+    done
+    return
   else
-    groups="apps shell modern logs containers workflow"
+    groups="apps shell modern logs workflow"
   fi
 
   selected=""
   for group in $groups; do
-    if ! is_brew_group "$group"; then
-      printf 'Unknown Homebrew group: %s\n\n' "$group" >&2
-      list_brew_groups >&2
-      exit 1
-    fi
-
     if [ "$group" = "none" ]; then
       printf 'none\n'
       return
     fi
-
-    case " $selected " in
-      *" $group "*) ;;
-      *) selected="$selected $group" ;;
-    esac
+    emit_group_specs "$group"
   done
-
-  selected="${selected# }"
-  printf '%s\n' "$selected"
 }
 
-append_brew_group() {
+append_brew_spec() {
   local output="$1"
-  local group="$2"
+  local spec="$2"
+  local kind
+  local name
 
-  case "$group" in
-    apps)
-      {
-        printf '\n# Core launcher / terminal apps\n'
-        if [ "$NO_CASKS" -eq 0 ]; then
-          printf 'cask "ghostty"\n'
-          printf 'cask "raycast"\n'
-          printf 'cask "font-jetbrains-mono-nerd-font"\n'
-        else
-          printf '# casks skipped by --no-casks\n'
-        fi
-      } >> "$output"
+  [ -n "$spec" ] || return
+
+  kind="${spec%%:*}"
+  name="${spec#*:}"
+
+  case "$kind" in
+    cask)
+      if [ "$NO_CASKS" -eq 0 ]; then
+        printf 'cask "%s"\n' "$name" >> "$output"
+      else
+        printf '# skipped cask "%s" due to --no-casks\n' "$name" >> "$output"
+      fi
       ;;
-    shell)
-      {
-        printf '\n# Shell ergonomics\n'
-        printf 'brew "atuin"\n'
-        printf 'brew "direnv"\n'
-        printf 'brew "fzf"\n'
-        printf 'brew "mise"\n'
-        printf 'brew "starship"\n'
-        printf 'brew "zoxide"\n'
-      } >> "$output"
+    brew)
+      printf 'brew "%s"\n' "$name" >> "$output"
       ;;
-    modern)
-      {
-        printf '\n# Modern Unix replacements\n'
-        printf 'brew "bat"\n'
-        printf 'brew "duf"\n'
-        printf 'brew "dust"\n'
-        printf 'brew "eza"\n'
-        printf 'brew "fd"\n'
-        printf 'brew "git-delta"\n'
-        printf 'brew "jq"\n'
-        printf 'brew "ripgrep"\n'
-        printf 'brew "sd"\n'
-        printf 'brew "yq"\n'
-      } >> "$output"
-      ;;
-    logs)
-      {
-        printf '\n# Logs, monitoring, and TUIs\n'
-        printf 'brew "btop"\n'
-        printf 'brew "lazygit"\n'
-        printf 'brew "lnav"\n'
-        printf 'brew "tailspin"\n'
-        printf 'brew "tmux"\n'
-        printf 'brew "yazi"\n'
-      } >> "$output"
-      ;;
-    containers)
-      {
-        printf '\n# Containers and Kubernetes\n'
-        printf 'brew "k9s"\n'
-        printf 'brew "lazydocker"\n'
-      } >> "$output"
-      ;;
-    workflow)
-      {
-        printf '\n# Developer workflow helpers\n'
-        printf 'brew "gh"\n'
-        printf 'brew "gum"\n'
-        printf 'brew "hyperfine"\n'
-        printf 'brew "just"\n'
-        printf 'brew "xh"\n'
-      } >> "$output"
+    *)
+      die "unknown Homebrew spec: $spec"
       ;;
   esac
 }
 
 write_selected_brewfile() {
   local output="$1"
-  local groups="$2"
-  local group
+  local specs="$2"
+  local spec
+  local seen=""
 
   {
     printf '# Generated by install.sh\n'
-    printf '# Selected groups:%s\n' "$groups"
+    printf '# Selected Homebrew tools\n\n'
   } > "$output"
 
-  for group in $groups; do
-    append_brew_group "$output" "$group"
-  done
+  while IFS= read -r spec; do
+    [ -n "$spec" ] || continue
+    [ "$spec" = "none" ] && continue
+    case "$seen" in
+      *"|$spec|"*) continue ;;
+    esac
+    seen="$seen|$spec|"
+    append_brew_spec "$output" "$spec"
+  done <<EOF
+$specs
+EOF
 }
 
 ensure_homebrew() {
@@ -313,22 +463,22 @@ brew_bundle() {
 
   ensure_homebrew
 
-  local selected_groups
+  local selected_specs
   local bundle_file
   local tmp_file
 
-  selected_groups="$(select_brew_groups)"
+  selected_specs="$(select_brew_specs)"
 
-  if [ "$selected_groups" = "none" ] || [ -z "$selected_groups" ]; then
+  if [ "$selected_specs" = "none" ] || [ -z "$selected_specs" ]; then
     log "Skipping Homebrew bundle"
     return
   fi
 
   tmp_file="$(mktemp)"
-  write_selected_brewfile "$tmp_file" "$selected_groups"
+  write_selected_brewfile "$tmp_file" "$selected_specs"
   bundle_file="$tmp_file"
 
-  log "Installing Homebrew groups:$selected_groups"
+  log "Installing selected Homebrew tools"
   run brew bundle --file "$bundle_file"
 
   rm -f "$tmp_file"
