@@ -41,14 +41,14 @@ devrepo
 
 1. Homebrew로 설치할 앱과 CLI 도구 목록을 관리합니다.
 2. zsh, starship, git 설정을 링크합니다.
-3. 회사 계정과 개인 계정용 Git 설정을 분리해서 관리합니다.
+3. `welda` 회사 계정과 `ruccess` 개인 계정용 Git 설정을 분리해서 관리합니다.
 
 ## 처음 실행
 
 기본 설치:
 
 ```zsh
-cd ~/workspace/dev-setup
+cd ~/workspace/ruccess/dev-setup
 ./install.sh
 source ~/.zshrc
 ./scripts/doctor.sh
@@ -205,7 +205,7 @@ p ~/code
 폴더를 만들고 바로 들어가기:
 
 ```zsh
-mkcd ~/workspace/personal/new-project
+mkcd ~/workspace/ruccess/new-project
 ```
 
 `zoxide`로 자주 가는 폴더에 빠르게 이동:
@@ -319,9 +319,11 @@ git diff
 git show
 ```
 
-## 회사 Git 계정과 개인 Git 계정
+## Welda Git 계정과 Ruccess Git 계정
 
-회사 계정과 개인 계정을 처음 설정:
+회사 계정은 `welda`, 개인 계정은 `ruccess`로 관리합니다.
+
+처음 설정:
 
 ```zsh
 git-account init
@@ -330,49 +332,48 @@ git-account init
 이 명령은 아래 파일들을 만듭니다:
 
 ```text
-~/.config/dev-setup/git/accounts/work.gitconfig
-~/.config/dev-setup/git/accounts/personal.gitconfig
+~/.config/dev-setup/git/accounts/welda.gitconfig
+~/.config/dev-setup/git/accounts/ruccess.gitconfig
 ```
 
 기본 규칙:
 
 ```text
-~/workspace/work/       회사 계정
-~/workspace/company/    회사 계정
-~/workspace/personal/   개인 계정
+~/workspace/welda/      회사 계정
+~/workspace/ruccess/    개인 계정
 ```
 
 현재 repo에서 어떤 Git 계정이 적용되는지 확인:
 
 ```zsh
 git-account current
-git-account current ~/workspace/wd-cron
+git-account current ~/workspace/welda/api
 ```
 
 특정 repo 하나를 회사 계정으로 고정:
 
 ```zsh
-git-account set-repo work ~/workspace/wd-cron
+git-account set-repo welda ~/workspace/welda/api
 ```
 
 특정 repo 하나를 개인 계정으로 고정:
 
 ```zsh
-git-account set-repo personal ~/workspace/personal/dotfiles
+git-account set-repo ruccess ~/workspace/ruccess/dev-setup
 ```
 
 특정 폴더 아래 repo 전체에 계정 규칙 추가:
 
 ```zsh
-git-account include work ~/workspace/work
-git-account include personal ~/workspace/personal
+git-account include welda ~/workspace/welda
+git-account include ruccess ~/workspace/ruccess
 ```
 
 GitHub용 SSH key 만들기:
 
 ```zsh
-git-account key work
-git-account key personal
+git-account key welda
+git-account key ruccess
 ```
 
 이 명령은 공개키를 출력하고, 가능하면 클립보드에도 복사합니다.
@@ -382,20 +383,20 @@ GitHub에는 공개키만 등록합니다. 개인키는 절대 GitHub나 repo에
 SSH remote는 이런 식으로 사용합니다:
 
 ```text
-git@github.com-work:company/repo.git
-git@github.com-personal:username/repo.git
+git@github.com-welda:welda/repo.git
+git@github.com-ruccess:ruccess/repo.git
 ```
 
 기존 GitHub remote를 회사 계정용으로 바꾸기:
 
 ```zsh
-git-account remote work origin ~/workspace/wd-cron
+git-account remote welda origin ~/workspace/welda/api
 ```
 
 기존 GitHub remote를 개인 계정용으로 바꾸기:
 
 ```zsh
-git-account remote personal origin ~/workspace/personal/dotfiles
+git-account remote ruccess origin ~/workspace/ruccess/dev-setup
 ```
 
 ## 런타임 버전 관리
@@ -549,7 +550,7 @@ just test
 예시:
 
 ```zsh
-gum choose work personal
+gum choose welda ruccess
 gum confirm "계속할까요?"
 gum input --placeholder "브랜치 이름"
 ```
@@ -638,9 +639,8 @@ git config --show-origin --get user.email
 SSH 접속이 안 되면:
 
 ```zsh
-ssh -T git@github.com-personal
-ssh -T git@github.com-work
+ssh -T git@github.com-ruccess
+ssh -T git@github.com-welda
 ```
 
 GitHub에 공개키가 등록되어 있는지도 확인합니다.
-

@@ -24,14 +24,11 @@
 	line-numbers = true
 	side-by-side = false
 
-[includeIf "gitdir:~/workspace/work/"]
-	path = ~/.config/dev-setup/git/accounts/work.gitconfig
+[includeIf "gitdir:~/workspace/welda/"]
+	path = ~/.config/dev-setup/git/accounts/welda.gitconfig
 
-[includeIf "gitdir:~/workspace/company/"]
-	path = ~/.config/dev-setup/git/accounts/work.gitconfig
-
-[includeIf "gitdir:~/workspace/personal/"]
-	path = ~/.config/dev-setup/git/accounts/personal.gitconfig
+[includeIf "gitdir:~/workspace/ruccess/"]
+	path = ~/.config/dev-setup/git/accounts/ruccess.gitconfig
 
 [alias]
 	st = status --short --branch

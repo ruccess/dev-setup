@@ -66,7 +66,7 @@ fi
 
 printf '\nGit account configs\n\n'
 
-for account in work personal; do
+for account in welda ruccess; do
   config="$HOME/.config/dev-setup/git/accounts/$account.gitconfig"
   if [ -f "$config" ]; then
     email="$(git config --file "$config" --get user.email 2>/dev/null || true)"

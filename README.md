@@ -7,7 +7,7 @@ This repo installs a focused CLI stack, links reusable shell config, and adds a 
 ## Quick Start
 
 ```zsh
-cd ~/workspace/dev-setup
+cd ~/workspace/ruccess/dev-setup
 ./install.sh --dry-run
 ./install.sh
 ```
@@ -54,12 +54,12 @@ logs app.log    # open logs with lnav
 tspin app.log   # highlight logs with tailspin
 z workspace     # jump with zoxide
 atuin search    # search shell history
-git-account     # manage work/personal Git accounts
+git-account     # manage Welda/Ruccess Git accounts
 ```
 
 ## Git Accounts
 
-This setup supports separate work and personal Git identities.
+This setup supports separate Welda and Ruccess Git identities.
 
 Run:
 
@@ -70,43 +70,42 @@ git-account init
 It creates local account configs under:
 
 ```text
-~/.config/dev-setup/git/accounts/work.gitconfig
-~/.config/dev-setup/git/accounts/personal.gitconfig
+~/.config/dev-setup/git/accounts/welda.gitconfig
+~/.config/dev-setup/git/accounts/ruccess.gitconfig
 ```
 
 By default, repos under these directories use the matching identity:
 
 ```text
-~/workspace/work/
-~/workspace/company/
-~/workspace/personal/
+~/workspace/welda/
+~/workspace/ruccess/
 ```
 
 For an existing repo outside those folders:
 
 ```zsh
-git-account set-repo work ~/workspace/wd-cron
-git-account current ~/workspace/wd-cron
+git-account set-repo welda ~/workspace/welda/api
+git-account current ~/workspace/welda/api
 ```
 
 For GitHub SSH keys:
 
 ```zsh
-git-account key work
-git-account key personal
+git-account key welda
+git-account key ruccess
 ```
 
 Add each public key to the matching GitHub account, then use SSH host aliases:
 
 ```text
-git@github.com-work:company/repo.git
-git@github.com-personal:username/repo.git
+git@github.com-welda:welda/repo.git
+git@github.com-ruccess:ruccess/repo.git
 ```
 
 To rewrite an existing GitHub remote:
 
 ```zsh
-git-account remote work origin ~/workspace/wd-cron
+git-account remote ruccess origin ~/workspace/ruccess/dev-setup
 ```
 
 ## Files
@@ -118,7 +117,7 @@ docs/LEARN.md                    Learning guide and cheat sheet
 config/zsh/dev-setup.zsh         Shell aliases and integrations
 config/starship/starship.toml    Prompt config
 config/git/gitconfig             Git aliases and delta config
-scripts/git-accounts.sh          Work/personal Git account manager
+scripts/git-accounts.sh          Welda/Ruccess Git account manager
 scripts/doctor.sh                Check installed tools
 ```
 

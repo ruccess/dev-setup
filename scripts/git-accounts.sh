@@ -3,8 +3,8 @@ set -euo pipefail
 
 ACCOUNT_DIR="${DEV_SETUP_GIT_ACCOUNT_DIR:-$HOME/.config/dev-setup/git/accounts}"
 SSH_CONFIG="${DEV_SETUP_SSH_CONFIG:-$HOME/.ssh/config}"
-WORK_DIR_DEFAULT="${DEV_SETUP_WORK_DIR:-$HOME/workspace/work}"
-PERSONAL_DIR_DEFAULT="${DEV_SETUP_PERSONAL_DIR:-$HOME/workspace/personal}"
+WELDA_DIR_DEFAULT="${DEV_SETUP_WELDA_DIR:-$HOME/workspace/welda}"
+RUCESS_DIR_DEFAULT="${DEV_SETUP_RUCESS_DIR:-$HOME/workspace/ruccess}"
 
 SSH_BEGIN="# >>> dev-setup git accounts >>>"
 SSH_END="# <<< dev-setup git accounts <<<"
@@ -14,27 +14,27 @@ usage() {
 Usage: git-account <command> [args]
 
 Commands:
-  init                         Create local work/personal configs and directory includes
+  init                         Create local welda/ruccess configs and directory includes
   current [repo]               Show the Git identity active for a repo
-  set-repo <work|personal> [repo]
+  set-repo <welda|ruccess> [repo]
                                Pin one repo to an account with local include.path
-  include <work|personal> <dir>
+  include <welda|ruccess> <dir>
                                Add a global includeIf rule for a directory
   ssh-config                   Install managed GitHub SSH host aliases
-  key <work|personal>          Create an ed25519 SSH key for an account
-  remote <work|personal> [remote] [repo]
+  key <welda|ruccess>          Create an ed25519 SSH key for an account
+  remote <welda|ruccess> [remote] [repo]
                                Rewrite a GitHub remote to use the account SSH alias
   help                         Show this help
 
 Examples:
   git-account init
   git-account current
-  git-account set-repo work ~/workspace/wd-cron
-  git-account remote personal origin ~/workspace/personal/dotfiles
+  git-account set-repo welda ~/workspace/welda/api
+  git-account remote ruccess origin ~/workspace/ruccess/dev-setup
 
 SSH remotes:
-  git@github.com-work:company/repo.git
-  git@github.com-personal:username/repo.git
+  git@github.com-welda:welda/repo.git
+  git@github.com-ruccess:ruccess/repo.git
 USAGE
 }
 
@@ -53,31 +53,31 @@ die() {
 
 account_config() {
   case "${1:-}" in
-    work|company) printf '%s/work.gitconfig\n' "$ACCOUNT_DIR" ;;
-    personal) printf '%s/personal.gitconfig\n' "$ACCOUNT_DIR" ;;
-    *) die "unknown account: ${1:-} (use work or personal)" ;;
+    welda|work|company) printf '%s/welda.gitconfig\n' "$ACCOUNT_DIR" ;;
+    ruccess|personal) printf '%s/ruccess.gitconfig\n' "$ACCOUNT_DIR" ;;
+    *) die "unknown account: ${1:-} (use welda or ruccess)" ;;
   esac
 }
 
 account_name() {
   case "${1:-}" in
-    work|company) printf 'work\n' ;;
-    personal) printf 'personal\n' ;;
-    *) die "unknown account: ${1:-} (use work or personal)" ;;
+    welda|work|company) printf 'welda\n' ;;
+    ruccess|personal) printf 'ruccess\n' ;;
+    *) die "unknown account: ${1:-} (use welda or ruccess)" ;;
   esac
 }
 
 host_alias() {
   case "$(account_name "$1")" in
-    work) printf 'github.com-work\n' ;;
-    personal) printf 'github.com-personal\n' ;;
+    welda) printf 'github.com-welda\n' ;;
+    ruccess) printf 'github.com-ruccess\n' ;;
   esac
 }
 
 key_path() {
   case "$(account_name "$1")" in
-    work) printf '%s/.ssh/id_ed25519_work\n' "$HOME" ;;
-    personal) printf '%s/.ssh/id_ed25519_personal\n' "$HOME" ;;
+    welda) printf '%s/.ssh/id_ed25519_welda\n' "$HOME" ;;
+    ruccess) printf '%s/.ssh/id_ed25519_ruccess\n' "$HOME" ;;
   esac
 }
 
@@ -178,16 +178,16 @@ install_ssh_config() {
 
   {
     printf '\n%s\n' "$SSH_BEGIN"
-    printf 'Host github.com-work\n'
+    printf 'Host github.com-welda github.com-work\n'
     printf '  HostName github.com\n'
     printf '  User git\n'
-    printf '  IdentityFile ~/.ssh/id_ed25519_work\n'
+    printf '  IdentityFile ~/.ssh/id_ed25519_welda\n'
     printf '  IdentitiesOnly yes\n'
     printf '\n'
-    printf 'Host github.com-personal\n'
+    printf 'Host github.com-ruccess github.com-personal\n'
     printf '  HostName github.com\n'
     printf '  User git\n'
-    printf '  IdentityFile ~/.ssh/id_ed25519_personal\n'
+    printf '  IdentityFile ~/.ssh/id_ed25519_ruccess\n'
     printf '  IdentitiesOnly yes\n'
     printf '%s\n' "$SSH_END"
   } >> "$tmp"
@@ -200,41 +200,41 @@ install_ssh_config() {
 init_accounts() {
   local default_name
   local default_email
-  local work_name
-  local work_email
-  local work_user
-  local personal_name
-  local personal_email
-  local personal_user
-  local work_dir
-  local personal_dir
+  local welda_name
+  local welda_email
+  local welda_user
+  local ruccess_name
+  local ruccess_email
+  local ruccess_user
+  local welda_dir
+  local ruccess_dir
 
   default_name="$(git config --global --get user.name 2>/dev/null || true)"
   default_email="$(git config --global --get user.email 2>/dev/null || true)"
 
-  printf 'Work account\n'
-  work_name="$(prompt_required '  Git name' "$default_name")"
-  work_email="$(prompt_required '  Git email' "$default_email")"
-  work_user="$(prompt '  GitHub username/org login' '')"
-  printf '\nPersonal account\n'
-  personal_name="$(prompt_required '  Git name' "$default_name")"
-  personal_email="$(prompt_required '  Git email' '')"
-  personal_user="$(prompt '  GitHub username' '')"
+  printf 'Welda account\n'
+  welda_name="$(prompt_required '  Git name' "$default_name")"
+  welda_email="$(prompt_required '  Git email' "$default_email")"
+  welda_user="$(prompt '  GitHub username/org login' 'welda')"
+  printf '\nRuccess account\n'
+  ruccess_name="$(prompt_required '  Git name' "$default_name")"
+  ruccess_email="$(prompt_required '  Git email' '')"
+  ruccess_user="$(prompt '  GitHub username' 'ruccess')"
   printf '\nDirectories\n'
-  work_dir="$(prompt_required '  Work repo directory' "$WORK_DIR_DEFAULT")"
-  personal_dir="$(prompt_required '  Personal repo directory' "$PERSONAL_DIR_DEFAULT")"
+  welda_dir="$(prompt_required '  Welda repo directory' "$WELDA_DIR_DEFAULT")"
+  ruccess_dir="$(prompt_required '  Ruccess repo directory' "$RUCESS_DIR_DEFAULT")"
 
-  write_account_config work "$work_name" "$work_email" "$work_user"
-  write_account_config personal "$personal_name" "$personal_email" "$personal_user"
-  ensure_global_include "$work_dir" "$(account_config work)"
-  ensure_global_include "$personal_dir" "$(account_config personal)"
+  write_account_config welda "$welda_name" "$welda_email" "$welda_user"
+  write_account_config ruccess "$ruccess_name" "$ruccess_email" "$ruccess_user"
+  ensure_global_include "$welda_dir" "$(account_config welda)"
+  ensure_global_include "$ruccess_dir" "$(account_config ruccess)"
   install_ssh_config
 
   printf '\nNext:\n'
-  printf '  git-account key work\n'
-  printf '  git-account key personal\n'
-  printf '  pbcopy < ~/.ssh/id_ed25519_work.pub\n'
-  printf '  pbcopy < ~/.ssh/id_ed25519_personal.pub\n'
+  printf '  git-account key welda\n'
+  printf '  git-account key ruccess\n'
+  printf '  pbcopy < ~/.ssh/id_ed25519_welda.pub\n'
+  printf '  pbcopy < ~/.ssh/id_ed25519_ruccess.pub\n'
 }
 
 show_current() {
@@ -329,8 +329,10 @@ rewrite_remote() {
     git@github.com:*)
       new_url="git@$alias:${url#git@github.com:}"
       ;;
-    git@github.com-work:*|git@github.com-personal:*)
-      rest="${url#git@github.com-work:}"
+    git@github.com-welda:*|git@github.com-ruccess:*|git@github.com-work:*|git@github.com-personal:*)
+      rest="${url#git@github.com-welda:}"
+      rest="${rest#git@github.com-ruccess:}"
+      rest="${rest#git@github.com-work:}"
       rest="${rest#git@github.com-personal:}"
       new_url="git@$alias:$rest"
       ;;
