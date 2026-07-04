@@ -34,7 +34,7 @@ cd path/to/dev-setup
 추천 핵심 섹션만 설치:
 
 ```zsh
-./install.sh --brew-groups apps,terminal,shell,modern,logs,code,git,workflow
+./install.sh --brew-groups apps,terminal,shell,modern,logs,code,git,ai-dev,workflow
 ```
 
 설치 후 새 터미널을 열거나:
@@ -87,6 +87,7 @@ dm
 install dry-run        설치 전 미리보기
 install interactive    전체 대화형 설치
 install recommended    핵심 추천 섹션 설치
+install AI dev baseline  AI 개발 기본 묶음만 설치
 tool catalog           도구 설명/추천 여부 보기
 doctor                 설치 상태 점검
 Git accounts           Git 계정/SSH 설정
@@ -323,6 +324,38 @@ git-account current
 | rclone | 클라우드 스토리지 동기화 | `rclone config` |
 | sevenzip | 압축/해제 | `7zz x archive.7z` |
 
+### AI Dev Baseline
+
+AI와 같이 코딩할 때는 AI CLI만이 아니라 런타임, 검색, GitHub, 검증 도구가 같이 필요합니다.
+
+```zsh
+./install.sh --brew-groups ai-dev
+```
+
+이 묶음에 들어가는 기본 도구:
+
+| 도구 | 왜 필요한가 | 처음 써보기 |
+| --- | --- | --- |
+| Claude Code | 터미널에서 AI와 코드 작업 | `claude` |
+| bun | JS/TS 프로젝트 생성, 실행, 테스트를 빠르게 처리 | `bun --version` |
+| pnpm | Node 프로젝트 의존성 설치/스크립트 실행 | `pnpm --version` |
+| uv | Python 프로젝트/패키지 관리 | `uv --version` |
+| mise | Node/Python 같은 런타임 버전 고정 | `mise use --global node@lts` |
+| gh | GitHub 로그인, repo, PR, workflow 관리 | `gh auth login` |
+| rg/fd/jq | 코드/파일/API 출력 검색과 분석 | `rg TODO`, `fd README`, `jq .` |
+| ast-grep | 코드 구조 기반 검색/수정 | `ast-grep --help` |
+| gitleaks | AI가 만든 변경에 secret이 섞였는지 검사 | `gitleaks detect` |
+| pre-commit | 프로젝트 검증 hook 실행 | `pre-commit install` |
+| just | 프로젝트 명령어를 한 곳에 정리 | `just --list` |
+
+설치 후 추천 초기화:
+
+```zsh
+mise use --global node@lts
+mise use --global python@latest
+gh auth login
+```
+
 ### Runtimes
 
 | 도구 | 설명 | 처음 써보기 |
@@ -333,6 +366,8 @@ git-account current
 | deno | JavaScript/TypeScript runtime | `deno --version` |
 
 ### AI
+
+`ai-dev`가 AI 코딩 기본 묶음이고, `ai` 섹션은 로컬 모델이나 별도 AI CLI까지 확장하고 싶을 때 고릅니다.
 
 | 도구 | 설명 | 처음 써보기 |
 | --- | --- | --- |

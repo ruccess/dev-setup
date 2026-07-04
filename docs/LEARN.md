@@ -187,6 +187,7 @@ modern      기본 명령어 대체: eza, bat, fd, rg, jq/yq, disk helpers
 logs        로그/TUI: lnav, tailspin, btop, lazygit, yazi
 code        코드 편집/품질: neovim, ast-grep, shellcheck, shfmt, actionlint
 git         Git 확장: git-lfs, pre-commit, difftastic, git-filter-repo
+ai-dev      AI 개발 기본: Claude Code, bun, pnpm, uv, gh, rg, fd, jq
 network     네트워크: wget, doggo, gping, mtr, iperf3, nmap, trippy
 data        데이터 처리: duckdb, sqlite, miller, xsv, jless, fx, visidata
 containers  Docker/Kubernetes: docker, colima, lazydocker, kubectl, helm, k9s
@@ -204,15 +205,15 @@ workflow    워크플로우: gh, just, gum, hyperfine, xh
 ./install.sh --list-tools
 ```
 
-기본값은 핵심 섹션만 `r`입니다. `network`, `data`, `containers`, `cloud`, `security`, `media`, `runtimes`, `ai`는 취향과 업무 환경을 많이 타서 기본값이 `n`입니다.
+기본값은 핵심 섹션만 `r`입니다. `ai-dev`는 AI와 함께 코딩하는 기본 묶음이라 추천에 포함됩니다. `network`, `data`, `containers`, `cloud`, `security`, `media`, `runtimes`, `ai`는 취향과 업무 환경을 많이 타서 기본값이 `n`입니다.
 
 예시:
 
 ```zsh
-./install.sh --brew-groups apps,terminal,shell,modern,logs,code,git,workflow
+./install.sh --brew-groups apps,terminal,shell,modern,logs,code,git,ai-dev,workflow
 ```
 
-Docker/Kubernetes를 안 쓰면 `containers`는 빼도 됩니다. AI 도구나 클라우드 CLI도 필요한 사람만 고르면 됩니다.
+Docker/Kubernetes를 안 쓰면 `containers`는 빼도 됩니다. `ai-dev`는 AI와 같이 코딩할 기본 묶음이고, `ai`는 Ollama/llm/aichat 같은 추가 AI CLI가 필요할 때 고르면 됩니다.
 
 ## 설치되는 CLI 도구
 
@@ -304,6 +305,36 @@ just        프로젝트 명령어 모음 실행기
 gum         쉘 스크립트에 선택/입력/확인 UI 추가
 hyperfine   명령어 실행 시간 벤치마크
 xh          HTTP 요청 CLI
+```
+
+AI 개발 기본 묶음:
+
+```text
+Claude Code  터미널 기반 AI 코딩 도우미
+bun          JS/TS 프로젝트 실행, 테스트, 패키지 관리
+pnpm         Node 프로젝트 의존성/스크립트 관리
+uv           Python 프로젝트/패키지 관리
+mise         Node/Python 런타임 버전 고정
+gh           GitHub 로그인, repo, PR, workflow 관리
+rg/fd/jq     코드/파일/API 출력 검색과 분석
+ast-grep     코드 구조 기반 검색/수정
+gitleaks     secret 스캔
+pre-commit   프로젝트 검증 hook
+just         프로젝트 명령어 실행
+```
+
+AI 개발 기본 묶음만 설치:
+
+```zsh
+./install.sh --brew-groups ai-dev
+```
+
+설치 후 추천 초기화:
+
+```zsh
+mise use --global node@lts
+mise use --global python@latest
+gh auth login
 ```
 
 AI CLI 도구:
@@ -406,6 +437,7 @@ dm
 install dry-run        설치 전 미리보기
 install interactive    전체 대화형 설치
 install recommended    핵심 추천 섹션 설치
+install AI dev baseline  AI 개발 기본 묶음만 설치
 tool catalog           도구 설명/추천 여부 보기
 doctor                 설치 상태 점검
 Git accounts           Git 계정/SSH 설정

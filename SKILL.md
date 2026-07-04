@@ -60,7 +60,7 @@ scripts/doctor.sh                설치 상태 점검
 ```zsh
 ./install.sh --list-brew-groups
 ./install.sh --list-tools
-./install.sh --brew-groups apps,terminal,shell,modern,logs,code,git,workflow
+./install.sh --brew-groups apps,terminal,shell,modern,logs,code,git,ai-dev,workflow
 ```
 
 설치 뒤 점검합니다.
@@ -82,6 +82,7 @@ modern     eza, bat, fd, rg, jq, yq 등
 logs       lnav, tailspin, btop, lazygit, yazi
 code       neovim, ast-grep, shellcheck, shfmt 등
 git        git-lfs, pre-commit, difftastic 등
+ai-dev     Claude Code, bun, pnpm, uv, gh, rg, fd, jq 등
 workflow   gh, just, gum, hyperfine, xh
 ```
 
@@ -94,6 +95,8 @@ network, data, containers, cloud, security, media, runtimes, ai
 `ai`에는 Claude Code cask가 포함됩니다. 필요할 때만 설치합니다.
 
 도구 설명이나 추천 여부를 물으면 `./install.sh --list-tools`를 먼저 확인합니다.
+
+AI와 함께 코딩하는 기본값을 물으면 `ai-dev`를 추천합니다. 이 섹션은 Claude Code, bun, pnpm, uv, mise, gh, rg/fd/jq, ast-grep, gitleaks, pre-commit, just를 한 묶음으로 설치합니다. `pnpm`을 쓰려면 Node가 필요하므로 설치 후 `mise use --global node@lts`를 안내합니다.
 
 ## Git 계정 관리
 
@@ -179,7 +182,7 @@ bash -n install.sh scripts/doctor.sh scripts/git-accounts.sh scripts/neovim-prof
 bash -n menu.sh scripts/menu.sh
 zsh -n config/zsh/dev-setup.zsh
 git diff --check
-./install.sh --dry-run --brew-groups terminal,code,ai --skip-git-accounts
+./install.sh --dry-run --brew-groups terminal,code,ai-dev,ai --skip-git-accounts
 ```
 
 `brew bundle check --file Brewfile`은 Brewfile 문법 확인에는 유용하지만, 미설치 패키지가 있으면 실패하는 것이 정상입니다.

@@ -122,6 +122,7 @@ list_actions() {
 install dry-run
 install interactive
 install recommended
+install AI dev baseline
 list Homebrew sections
 tool catalog
 doctor
@@ -147,7 +148,13 @@ action_install_interactive() {
 
 action_install_recommended() {
   if confirm "Install recommended core sections now?"; then
-    run_cmd "$REPO_DIR/install.sh" --brew-groups apps,terminal,shell,modern,logs,code,git,workflow --skip-git-accounts
+    run_cmd "$REPO_DIR/install.sh" --brew-groups apps,terminal,shell,modern,logs,code,git,ai-dev,workflow --skip-git-accounts
+  fi
+}
+
+action_install_ai_dev() {
+  if confirm "Install the AI-assisted coding baseline now?"; then
+    run_cmd "$REPO_DIR/install.sh" --brew-groups ai-dev --skip-git-accounts
   fi
 }
 
@@ -360,6 +367,7 @@ main_menu() {
       "install dry-run" \
       "install interactive" \
       "install recommended" \
+      "install AI dev baseline" \
       "list Homebrew sections" \
       "tool catalog" \
       "doctor" \
@@ -376,6 +384,7 @@ main_menu() {
       "install dry-run") action_install_dry_run ;;
       "install interactive") action_install_interactive ;;
       "install recommended") action_install_recommended ;;
+      "install AI dev baseline") action_install_ai_dev ;;
       "list Homebrew sections") run_cmd "$REPO_DIR/install.sh" --list-brew-groups ;;
       "tool catalog") run_cmd "$REPO_DIR/install.sh" --list-tools ;;
       "doctor") run_cmd "$REPO_DIR/scripts/doctor.sh" ;;

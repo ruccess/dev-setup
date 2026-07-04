@@ -8,7 +8,7 @@ SKIP_SHELL=0
 GIT_ACCOUNTS_MODE="ask"
 BREW_GROUPS_MODE="ask"
 BREW_GROUPS=""
-BREW_SECTIONS="apps terminal shell modern logs code git network data containers cloud security media runtimes ai workflow"
+BREW_SECTIONS="apps terminal shell modern logs code git ai-dev network data containers cloud security media runtimes ai workflow"
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BREWFILE="$REPO_DIR/Brewfile"
@@ -128,6 +128,7 @@ Available Homebrew sections:
   logs        lnav, tailspin, btop, lazygit, yazi
   code        neovim, ast-grep, shellcheck, shfmt, actionlint, typos-cli
   git         git-lfs, pre-commit, difftastic, git-filter-repo, jj
+  ai-dev      Claude Code, bun, pnpm, uv, gh, rg, fd, jq, ast-grep
   network     wget, doggo, gping, mtr, iperf3, nmap, bandwhich, trippy
   data        duckdb, sqlite, miller, csvkit, xsv, jless, fx, visidata
   containers  docker, docker-compose, colima, lazydocker, kubectl, helm, k9s
@@ -139,7 +140,8 @@ Available Homebrew sections:
   workflow    gh, just, gum, hyperfine, xh
 
 Examples:
-  ./install.sh --brew-groups apps,terminal,shell,modern
+  ./install.sh --brew-groups ai-dev
+  ./install.sh --brew-groups apps,terminal,shell,modern,logs,code,git,ai-dev,workflow
   ./install.sh --all-brew
   ./install.sh --brew-groups none
 GROUPS
@@ -172,7 +174,7 @@ list_brew_tools() {
 
 is_brew_group() {
   case "$1" in
-    apps|terminal|shell|modern|logs|code|git|network|data|containers|cloud|security|media|runtimes|ai|workflow|none) return 0 ;;
+    apps|terminal|shell|modern|logs|code|git|ai-dev|network|data|containers|cloud|security|media|runtimes|ai|workflow|none) return 0 ;;
     *) return 1 ;;
   esac
 }
@@ -186,6 +188,7 @@ section_title() {
     logs) printf 'Logs, monitoring, and TUIs\n' ;;
     code) printf 'Code editing and quality\n' ;;
     git) printf 'Git extras\n' ;;
+    ai-dev) printf 'AI-assisted coding baseline\n' ;;
     network) printf 'Network and API diagnostics\n' ;;
     data) printf 'Data and file wrangling\n' ;;
     containers) printf 'Containers and Kubernetes\n' ;;
@@ -278,6 +281,23 @@ brew:difftastic|difftastic|syntax-aware diff viewer|Y
 brew:jj|jj|Jujutsu version control|N
 ITEMS
       ;;
+    ai-dev)
+      cat <<'ITEMS'
+cask:claude-code|Claude Code|terminal AI coding assistant, command is claude|Y
+brew:bun|bun|fast JavaScript runtime, bundler, test runner, and package manager|Y
+brew:pnpm|pnpm|fast disk-efficient JavaScript package manager|Y
+brew:uv|uv|fast Python package/project tool|Y
+brew:mise|mise|runtime version manager for Node/Python/etc.|Y
+brew:gh|gh|GitHub CLI for auth, repos, PRs, and workflows|Y
+brew:ripgrep|ripgrep|fast code search, command is rg|Y
+brew:fd|fd|fast file finder|Y
+brew:jq|jq|JSON processor for API and tool output|Y
+brew:ast-grep|ast-grep|AST-aware code search and rewrite|Y
+brew:gitleaks|gitleaks|secret scanner before commits|Y
+brew:pre-commit|pre-commit|project hook runner|Y
+brew:just|just|project command runner|Y
+ITEMS
+      ;;
     network)
       cat <<'ITEMS'
 brew:wget|wget|file downloader|Y
@@ -353,7 +373,7 @@ ITEMS
     runtimes)
       cat <<'ITEMS'
 brew:uv|uv|fast Python package/project tool|Y
-brew:bun|bun|JavaScript runtime and package manager|N
+brew:bun|bun|JavaScript runtime and package manager|Y
 brew:pnpm|pnpm|JavaScript package manager|Y
 brew:deno|deno|JavaScript/TypeScript runtime|N
 ITEMS
@@ -545,7 +565,7 @@ select_brew_specs() {
     done
     return
   else
-    groups="apps terminal shell modern logs code git workflow"
+    groups="apps terminal shell modern logs code git ai-dev workflow"
   fi
 
   selected=""
