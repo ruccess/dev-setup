@@ -34,8 +34,8 @@ brew "tmux"
 brew "yazi"
 
 # Developer workflow helpers
+brew "gh"
 brew "gum"
 brew "hyperfine"
 brew "just"
 brew "xh"
-

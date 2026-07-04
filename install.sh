@@ -11,6 +11,7 @@ BREWFILE="$REPO_DIR/Brewfile"
 ZSH_SNIPPET="$REPO_DIR/config/zsh/dev-setup.zsh"
 STARSHIP_CONFIG="$REPO_DIR/config/starship/starship.toml"
 GIT_CONFIG="$REPO_DIR/config/git/gitconfig"
+GIT_ACCOUNT_SCRIPT="$REPO_DIR/scripts/git-accounts.sh"
 
 usage() {
   cat <<'USAGE'
@@ -198,6 +199,7 @@ install_shell_configs() {
 
   link_file "$ZSH_SNIPPET" "$HOME/.config/dev-setup/dev-setup.zsh"
   link_file "$STARSHIP_CONFIG" "$HOME/.config/starship.toml"
+  link_file "$GIT_ACCOUNT_SCRIPT" "$HOME/.local/bin/git-account"
   install_zshrc_block
   install_git_include
 }
@@ -229,4 +231,3 @@ main() {
 }
 
 main "$@"
-

@@ -24,6 +24,15 @@
 	line-numbers = true
 	side-by-side = false
 
+[includeIf "gitdir:~/workspace/work/"]
+	path = ~/.config/dev-setup/git/accounts/work.gitconfig
+
+[includeIf "gitdir:~/workspace/company/"]
+	path = ~/.config/dev-setup/git/accounts/work.gitconfig
+
+[includeIf "gitdir:~/workspace/personal/"]
+	path = ~/.config/dev-setup/git/accounts/personal.gitconfig
+
 [alias]
 	st = status --short --branch
 	co = checkout
@@ -33,4 +42,3 @@
 	last = log -1 HEAD --stat
 	lg = log --graph --decorate --oneline --all
 	uncommit = reset --soft HEAD~1
-

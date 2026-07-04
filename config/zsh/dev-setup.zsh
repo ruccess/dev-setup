@@ -32,6 +32,7 @@ command -v bat >/dev/null 2>&1 && alias catp='bat --paging=never'
 command -v lazygit >/dev/null 2>&1 && alias lg='lazygit'
 command -v lazydocker >/dev/null 2>&1 && alias lzd='lazydocker'
 command -v k9s >/dev/null 2>&1 && alias k9='k9s'
+command -v git-account >/dev/null 2>&1 && alias ga='git-account'
 
 alias g='git'
 alias reload!='source ~/.zshrc'
@@ -75,4 +76,3 @@ logs() {
 path() {
   printf '%s\n' "${(s/:/)PATH}"
 }
-

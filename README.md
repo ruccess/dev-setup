@@ -36,7 +36,7 @@ Everyday CLI:
 - `dust`, `duf`, `btop`
 - `lnav`, `tailspin`
 - `lazygit`, `lazydocker`, `k9s`, `yazi`, `tmux`
-- `just`, `gum`, `hyperfine`, `xh`
+- `gh`, `just`, `gum`, `hyperfine`, `xh`
 
 ## Useful Commands
 
@@ -50,6 +50,59 @@ logs app.log    # open logs with lnav
 tspin app.log   # highlight logs with tailspin
 z workspace     # jump with zoxide
 atuin search    # search shell history
+git-account     # manage work/personal Git accounts
+```
+
+## Git Accounts
+
+This setup supports separate work and personal Git identities.
+
+Run:
+
+```zsh
+git-account init
+```
+
+It creates local account configs under:
+
+```text
+~/.config/dev-setup/git/accounts/work.gitconfig
+~/.config/dev-setup/git/accounts/personal.gitconfig
+```
+
+By default, repos under these directories use the matching identity:
+
+```text
+~/workspace/work/
+~/workspace/company/
+~/workspace/personal/
+```
+
+For an existing repo outside those folders:
+
+```zsh
+git-account set-repo work ~/workspace/wd-cron
+git-account current ~/workspace/wd-cron
+```
+
+For GitHub SSH keys:
+
+```zsh
+git-account key work
+git-account key personal
+```
+
+Add each public key to the matching GitHub account, then use SSH host aliases:
+
+```text
+git@github.com-work:company/repo.git
+git@github.com-personal:username/repo.git
+```
+
+To rewrite an existing GitHub remote:
+
+```zsh
+git-account remote work origin ~/workspace/wd-cron
 ```
 
 ## Files
@@ -60,6 +113,7 @@ install.sh                       Idempotent installer
 config/zsh/dev-setup.zsh         Shell aliases and integrations
 config/starship/starship.toml    Prompt config
 config/git/gitconfig             Git aliases and delta config
+scripts/git-accounts.sh          Work/personal Git account manager
 scripts/doctor.sh                Check installed tools
 ```
 
@@ -71,4 +125,3 @@ Create a remote repo, then push:
 git remote add origin git@github.com:<you>/dev-setup.git
 git push -u origin main
 ```
-

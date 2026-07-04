@@ -4,6 +4,8 @@ set -euo pipefail
 commands=(
   brew
   git
+  git-account
+  gh
   fzf
   zoxide
   atuin
@@ -62,5 +64,16 @@ else
   missing=1
 fi
 
-exit "$missing"
+printf '\nGit account configs\n\n'
 
+for account in work personal; do
+  config="$HOME/.config/dev-setup/git/accounts/$account.gitconfig"
+  if [ -f "$config" ]; then
+    email="$(git config --file "$config" --get user.email 2>/dev/null || true)"
+    printf 'ok      %-12s %s\n' "$account" "${email:-$config}"
+  else
+    printf 'todo    %-12s run: git-account init\n' "$account"
+  fi
+done
+
+exit "$missing"
