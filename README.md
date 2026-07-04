@@ -19,22 +19,26 @@ cd path/to/dev-setup
 ./menu.sh
 ```
 
+처음에는 메뉴에서 `tool catalog` 또는 `list Homebrew sections`를 먼저 보고, 설치할 도구를 고른 뒤 진행합니다.
+
 설치 전에 어떤 일이 일어날지 보고 싶으면:
 
 ```zsh
-./install.sh --dry-run
+./install.sh --dry-run --brew-groups <고른-섹션> --skip-git-accounts
 ```
 
-대화형 설치:
+터미널에서 직접 섹션을 하나씩 고르며 설치:
 
 ```zsh
 ./install.sh
 ```
 
-추천 핵심 섹션만 설치:
+AI나 자동화 환경처럼 대화형 입력이 없을 때는 도구를 자동으로 고르지 않습니다. 먼저 목록을 보고 명시적으로 섹션을 지정합니다.
 
 ```zsh
-./install.sh --brew-groups apps,terminal,shell,modern,logs,code,git,ai-dev,workflow
+./install.sh --list-brew-groups
+./install.sh --list-tools
+./install.sh --brew-groups shell,modern,ai-dev
 ```
 
 설치 후 새 터미널을 열거나:
@@ -84,11 +88,10 @@ dm
 메뉴에서 할 수 있는 일:
 
 ```text
-install dry-run        설치 전 미리보기
-install interactive    전체 대화형 설치
-install recommended    핵심 추천 섹션 설치
-install AI dev baseline  AI 개발 기본 묶음만 설치
-tool catalog           도구 설명/추천 여부 보기
+list Homebrew sections   설치 섹션 목록 보기
+tool catalog             도구 설명/추천 여부 보기
+choose tools dry-run     섹션별로 고른 뒤 설치 전 미리보기
+choose tools and install 섹션별로 고른 도구 설치
 doctor                 설치 상태 점검
 Git accounts           Git 계정/SSH 설정
 GitHub CLI             gh 로그인/PR/workflow 확인
@@ -123,6 +126,8 @@ c      도구별로 하나씩 선택
 ./install.sh --all-brew
 ./install.sh --brew-groups none
 ```
+
+비대화형 실행에서는 `./install.sh`만으로 추천 도구를 자동 선택하지 않습니다. AI에게 맡길 때도 먼저 `--list-tools`로 설명을 보고, 사용자가 고른 섹션만 `--brew-groups`에 넣습니다.
 
 ## 도구 설명
 

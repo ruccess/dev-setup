@@ -24,19 +24,21 @@ description: Use this skill when working in a dev-setup repository to install, e
 - AI는 페어 셋업 도우미처럼 현재 단계, 실행한 명령, 결과, 다음 선택지를 짧게 설명합니다.
 - 먼저 전체 체크리스트를 만들고, 단계가 끝날 때마다 완료/진행 상태를 갱신합니다.
 - 명령은 작은 단위로 실행합니다. 한 단계가 끝나면 결과를 요약하고 다음 단계로 넘어갑니다.
-- 조회 명령은 적극적으로 실행해도 됩니다. 예: `git status --short`, `brew --version`, `./install.sh --dry-run`, `./install.sh --list-tools`, `./scripts/doctor.sh`
+- 조회 명령은 적극적으로 실행해도 됩니다. 예: `git status --short`, `brew --version`, `./install.sh --list-brew-groups`, `./install.sh --list-tools`, `./scripts/doctor.sh`
+- Homebrew 도구는 반드시 사용자가 선택한 뒤에만 dry-run 또는 설치합니다. AI가 추천 묶음을 임의로 선택하지 않습니다.
+- 비대화형 AI 환경에서는 `./install.sh` 또는 `./install.sh --dry-run`만 단독 실행하지 않습니다. 먼저 사용자의 선택을 받은 뒤 `--brew-groups <선택한 섹션>` 또는 `--brew-groups none`을 붙입니다.
 - 실제 설치, shell 링크, Git 계정 설정, SSH 키 생성, remote 변경, push처럼 사용자 환경을 바꾸는 단계는 각 단계마다 명시적인 승인을 받습니다.
-- 사용자가 선택을 어려워하면 추천안을 먼저 제시하되, 선택지는 3개 안팎으로 줄입니다.
+- 사용자가 선택을 어려워하면 추천 이유를 설명하되, 최종 선택은 사용자에게 받습니다. 한 번에 너무 많으면 섹션을 3개 안팎으로 나누어 묻습니다.
 
 가이드 설치의 기본 단계:
 
 ```text
 1. 현황 확인
-   git status, Homebrew/Git 존재 여부, dry-run, doctor
+   git status, Homebrew/Git 존재 여부, doctor
 2. 설치 범위 선택
-   추천 기본 묶음, AI 개발 묶음, 섹션별 커스텀 중 선택
+   list-brew-groups, list-tools를 보여주고 섹션/도구를 사용자에게 선택받기
 3. Homebrew 도구 설치
-   선택한 섹션만 실제 설치
+   사용자가 고른 섹션으로 dry-run 후 승인받고 실제 설치
 4. shell/helper 링크
    zsh alias, dev-setup 메뉴, git-account, nvim-profile, zellij layout
 5. runtime 초기화
@@ -54,8 +56,28 @@ description: Use this skill when working in a dev-setup repository to install, e
 다음 단계가 환경을 바꾸는 작업이면 이런 식으로 멈춰서 확인합니다.
 
 ```text
-다음 단계는 Homebrew 도구 실제 설치입니다.
-선택한 섹션은 apps,terminal,shell,modern,logs,code,git,ai-dev,workflow 입니다.
+다음 단계는 선택한 Homebrew 도구의 dry-run입니다.
+현재 사용자가 고른 섹션은 shell,modern,ai-dev 입니다.
+이 선택으로 미리보기를 실행해도 될까요?
+```
+
+실제 설치 명령은 사용자의 선택을 그대로 반영합니다.
+
+```zsh
+./install.sh --dry-run --brew-groups shell,modern,ai-dev --skip-git-accounts
+./install.sh --brew-groups shell,modern,ai-dev --skip-git-accounts
+```
+
+아직 도구를 고르지 않았고 shell/config 변경만 미리보고 싶다면:
+
+```zsh
+./install.sh --dry-run --brew-groups none --skip-git-accounts
+```
+
+아래처럼 AI가 임의로 큰 추천 묶음을 정해서 진행하면 안 됩니다.
+
+```text
+추천 기본 묶음으로 바로 설치하겠습니다.
 실행해도 될까요?
 ```
 
@@ -78,7 +100,7 @@ scripts/doctor.sh                설치 상태 점검
 
 ## 설치 작업 흐름
 
-사용자가 명령어 선택을 어려워하면 메뉴부터 실행합니다.
+사용자가 명령어 선택을 어려워하면 메뉴부터 실행합니다. 메뉴에서도 먼저 `tool catalog`나 `list Homebrew sections`를 보여주고, 사용자가 고른 뒤 `choose tools dry-run` 또는 `choose tools and install`로 진행합니다.
 
 ```zsh
 ./menu.sh
@@ -89,10 +111,10 @@ scripts/doctor.sh                설치 상태 점검
 먼저 dry-run을 실행합니다.
 
 ```zsh
-./install.sh --dry-run
+./install.sh --dry-run --brew-groups <사용자가-고른-섹션> --skip-git-accounts
 ```
 
-사용자가 실제 설치를 원하면 실행합니다.
+사용자가 터미널에서 직접 대화형으로 섹션을 고르겠다고 하면 실행합니다.
 
 ```zsh
 ./install.sh
@@ -103,7 +125,7 @@ scripts/doctor.sh                설치 상태 점검
 ```zsh
 ./install.sh --list-brew-groups
 ./install.sh --list-tools
-./install.sh --brew-groups apps,terminal,shell,modern,logs,code,git,ai-dev,workflow
+./install.sh --brew-groups shell,modern,ai-dev
 ```
 
 설치 뒤 점검합니다.

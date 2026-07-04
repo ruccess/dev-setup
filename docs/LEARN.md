@@ -31,7 +31,7 @@ devrepo
 ./install.sh
 ```
 
-무엇을 실행할지 메뉴로 고르고 싶으면:
+처음에는 메뉴로 도구 설명을 보고, 설치할 섹션을 고르는 것을 권장합니다:
 
 ```zsh
 ./menu.sh
@@ -40,7 +40,7 @@ devrepo
 설치 전에 어떤 일이 일어날지 미리 보고 싶으면:
 
 ```zsh
-./install.sh --dry-run
+./install.sh --dry-run --brew-groups <고른-섹션> --skip-git-accounts
 ```
 
 설치할 도구 섹션을 직접 고르고 싶으면:
@@ -50,6 +50,8 @@ devrepo
 ./install.sh --list-tools
 ./install.sh --brew-groups apps,terminal,shell,modern
 ```
+
+AI나 자동화 환경처럼 대화형 입력이 없는 곳에서는 `./install.sh`만으로 추천 도구를 자동 선택하지 않습니다. 반드시 `--list-tools`를 먼저 보고, 사용자가 고른 섹션만 `--brew-groups`에 넣습니다.
 
 전부 설치하려면:
 
@@ -95,12 +97,11 @@ export DEV_SETUP_ACCOUNT_COUNT="2"
 
 ## 처음 실행
 
-기본 설치:
+처음 설치는 도구를 고르면서 진행합니다:
 
 ```zsh
 cd path/to/dev-setup
 ./menu.sh
-./install.sh
 source ~/.zshrc
 ./scripts/doctor.sh
 ```
@@ -205,15 +206,15 @@ workflow    워크플로우: gh, just, gum, hyperfine, xh
 ./install.sh --list-tools
 ```
 
-기본값은 핵심 섹션만 `r`입니다. `ai-dev`는 AI와 함께 코딩하는 기본 묶음이라 추천에 포함됩니다. `network`, `data`, `containers`, `cloud`, `security`, `media`, `runtimes`, `ai`는 취향과 업무 환경을 많이 타서 기본값이 `n`입니다.
+터미널에서 직접 대화형으로 실행할 때는 핵심 섹션의 기본값이 `r`입니다. 다만 AI나 자동화 환경에서는 기본값을 대신 고르지 않으므로, 사용자가 고른 섹션만 명시해야 합니다. `network`, `data`, `containers`, `cloud`, `security`, `media`, `runtimes`, `ai`는 취향과 업무 환경을 많이 타서 대화형 기본값이 `n`입니다.
 
 예시:
 
 ```zsh
-./install.sh --brew-groups apps,terminal,shell,modern,logs,code,git,ai-dev,workflow
+./install.sh --brew-groups shell,modern,ai-dev
 ```
 
-Docker/Kubernetes를 안 쓰면 `containers`는 빼도 됩니다. `ai-dev`는 AI와 같이 코딩할 기본 묶음이고, `ai`는 Ollama/llm/aichat 같은 추가 AI CLI가 필요할 때 고르면 됩니다.
+위 명령은 예시일 뿐입니다. 실제로는 사용자가 고른 섹션만 넣습니다. `ai-dev`는 AI와 같이 코딩할 기본 묶음이고, `ai`는 Ollama/llm/aichat 같은 추가 AI CLI가 필요할 때 고르면 됩니다.
 
 ## 설치되는 CLI 도구
 
@@ -441,11 +442,10 @@ dm
 메뉴에서 할 수 있는 일:
 
 ```text
-install dry-run        설치 전 미리보기
-install interactive    전체 대화형 설치
-install recommended    핵심 추천 섹션 설치
-install AI dev baseline  AI 개발 기본 묶음만 설치
-tool catalog           도구 설명/추천 여부 보기
+list Homebrew sections   설치 섹션 목록 보기
+tool catalog             도구 설명/추천 여부 보기
+choose tools dry-run     섹션별로 고른 뒤 설치 전 미리보기
+choose tools and install 섹션별로 고른 도구 설치
 doctor                 설치 상태 점검
 Git accounts           Git 계정/SSH 설정
 GitHub CLI             gh 로그인/PR/workflow 확인

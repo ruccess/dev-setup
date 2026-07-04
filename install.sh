@@ -52,6 +52,11 @@ Options:
   --skip-git-accounts
                  Do not ask to configure Git accounts
   -h, --help     Show this help
+
+Notes:
+  When there is no interactive terminal, Homebrew tools are never chosen
+  automatically. Pass --brew-groups GROUPS after reviewing --list-tools,
+  or pass --skip-brew / --brew-groups none.
 USAGE
 }
 
@@ -61,6 +66,11 @@ log() {
 
 warn() {
   printf '\033[1;33mwarn:\033[0m %s\n' "$*" >&2
+}
+
+die() {
+  printf 'error: %s\n' "$*" >&2
+  exit 1
 }
 
 run() {
@@ -141,7 +151,7 @@ Available Homebrew sections:
 
 Examples:
   ./install.sh --brew-groups ai-dev
-  ./install.sh --brew-groups apps,terminal,shell,modern,logs,code,git,ai-dev,workflow
+  ./install.sh --brew-groups shell,modern,ai-dev
   ./install.sh --all-brew
   ./install.sh --brew-groups none
 GROUPS
@@ -565,7 +575,11 @@ select_brew_specs() {
     done
     return
   else
-    groups="apps terminal shell modern logs code git ai-dev workflow"
+    warn "No interactive terminal detected, so Homebrew tools were not selected automatically."
+    warn "Review tools with: ./install.sh --list-tools"
+    warn "Then run with an explicit choice, for example: ./install.sh --brew-groups ai-dev"
+    warn "For config-only setup, use: ./install.sh --skip-brew"
+    exit 2
   fi
 
   selected=""

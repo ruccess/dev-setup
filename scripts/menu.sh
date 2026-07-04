@@ -119,12 +119,10 @@ open_file() {
 
 list_actions() {
   cat <<'ACTIONS'
-install dry-run
-install interactive
-install recommended
-install AI dev baseline
 list Homebrew sections
 tool catalog
+choose tools dry-run
+choose tools and install
 doctor
 Git accounts
 GitHub CLI
@@ -137,24 +135,12 @@ ACTIONS
 }
 
 action_install_dry_run() {
-  run_cmd "$REPO_DIR/install.sh" --dry-run
+  run_cmd "$REPO_DIR/install.sh" --dry-run --skip-git-accounts
 }
 
-action_install_interactive() {
-  if confirm "Run the full interactive installer now?"; then
-    run_cmd "$REPO_DIR/install.sh"
-  fi
-}
-
-action_install_recommended() {
-  if confirm "Install recommended core sections now?"; then
-    run_cmd "$REPO_DIR/install.sh" --brew-groups apps,terminal,shell,modern,logs,code,git,ai-dev,workflow --skip-git-accounts
-  fi
-}
-
-action_install_ai_dev() {
-  if confirm "Install the AI-assisted coding baseline now?"; then
-    run_cmd "$REPO_DIR/install.sh" --brew-groups ai-dev --skip-git-accounts
+action_install_choose() {
+  if confirm "Choose tools section-by-section and install the selected tools now?"; then
+    run_cmd "$REPO_DIR/install.sh" --skip-git-accounts
   fi
 }
 
@@ -364,12 +350,10 @@ main_menu() {
 
   while true; do
     choice="$(choose_one "dev-setup" \
-      "install dry-run" \
-      "install interactive" \
-      "install recommended" \
-      "install AI dev baseline" \
       "list Homebrew sections" \
       "tool catalog" \
+      "choose tools dry-run" \
+      "choose tools and install" \
       "doctor" \
       "Git accounts" \
       "GitHub CLI" \
@@ -381,12 +365,10 @@ main_menu() {
       "quit")"
 
     case "$choice" in
-      "install dry-run") action_install_dry_run ;;
-      "install interactive") action_install_interactive ;;
-      "install recommended") action_install_recommended ;;
-      "install AI dev baseline") action_install_ai_dev ;;
       "list Homebrew sections") run_cmd "$REPO_DIR/install.sh" --list-brew-groups ;;
       "tool catalog") run_cmd "$REPO_DIR/install.sh" --list-tools ;;
+      "choose tools dry-run") action_install_dry_run ;;
+      "choose tools and install") action_install_choose ;;
       "doctor") run_cmd "$REPO_DIR/scripts/doctor.sh" ;;
       "Git accounts") action_git_accounts ;;
       "GitHub CLI") action_github_cli ;;
