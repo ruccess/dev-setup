@@ -16,6 +16,49 @@ description: Use this skill when working in a dev-setup repository to install, e
 - 비밀키는 절대 출력하지 않습니다. GitHub에 등록해야 할 때는 `.pub` 공개키만 보여주거나 클립보드에 복사합니다.
 - `~/.config/nvim`은 자동으로 덮어쓰지 않습니다. Neovim 배포판은 `NVIM_APPNAME` 프로필로 분리해서 시험하게 합니다.
 
+## 가이드 설치 모드
+
+사용자가 "같이 설치", "하나하나 설치", "세팅해줘", "처음부터 잡아줘"처럼 말하면 가이드 설치 모드로 진행합니다.
+
+- 한 번에 최종 설치 명령만 던지고 멈추지 않습니다.
+- AI는 페어 셋업 도우미처럼 현재 단계, 실행한 명령, 결과, 다음 선택지를 짧게 설명합니다.
+- 먼저 전체 체크리스트를 만들고, 단계가 끝날 때마다 완료/진행 상태를 갱신합니다.
+- 명령은 작은 단위로 실행합니다. 한 단계가 끝나면 결과를 요약하고 다음 단계로 넘어갑니다.
+- 조회 명령은 적극적으로 실행해도 됩니다. 예: `git status --short`, `brew --version`, `./install.sh --dry-run`, `./install.sh --list-tools`, `./scripts/doctor.sh`
+- 실제 설치, shell 링크, Git 계정 설정, SSH 키 생성, remote 변경, push처럼 사용자 환경을 바꾸는 단계는 각 단계마다 명시적인 승인을 받습니다.
+- 사용자가 선택을 어려워하면 추천안을 먼저 제시하되, 선택지는 3개 안팎으로 줄입니다.
+
+가이드 설치의 기본 단계:
+
+```text
+1. 현황 확인
+   git status, Homebrew/Git 존재 여부, dry-run, doctor
+2. 설치 범위 선택
+   추천 기본 묶음, AI 개발 묶음, 섹션별 커스텀 중 선택
+3. Homebrew 도구 설치
+   선택한 섹션만 실제 설치
+4. shell/helper 링크
+   zsh alias, dev-setup 메뉴, git-account, nvim-profile, zellij layout
+5. runtime 초기화
+   mise로 Node/Python 기본 버전 설정
+6. AI/GitHub 로그인
+   claude, gh auth login
+7. Git 계정 분리
+   personal/work 같은 계정 이름과 workspace 경로 확인 후 git-account init
+8. 선택 기능
+   Neovim 프로필, Zellij/tmux 작업대, GitHub remote alias
+9. 최종 점검
+   doctor, 버전 확인, 남은 수동 작업 요약
+```
+
+다음 단계가 환경을 바꾸는 작업이면 이런 식으로 멈춰서 확인합니다.
+
+```text
+다음 단계는 Homebrew 도구 실제 설치입니다.
+선택한 섹션은 apps,terminal,shell,modern,logs,code,git,ai-dev,workflow 입니다.
+실행해도 될까요?
+```
+
 ## 주요 파일
 
 ```text
