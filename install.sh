@@ -5,6 +5,7 @@ DRY_RUN=0
 NO_CASKS=0
 SKIP_BREW=0
 SKIP_SHELL=0
+GIT_ACCOUNTS_MODE="ask"
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BREWFILE="$REPO_DIR/Brewfile"
@@ -23,6 +24,9 @@ Options:
   --no-casks     Skip Homebrew cask apps
   --skip-brew    Skip Homebrew bundle install
   --skip-shell   Skip zsh/config/git setup
+  --git-accounts Configure Git accounts during install
+  --skip-git-accounts
+                 Do not ask to configure Git accounts
   -h, --help     Show this help
 USAGE
 }
@@ -52,6 +56,8 @@ parse_args() {
       --no-casks) NO_CASKS=1 ;;
       --skip-brew) SKIP_BREW=1 ;;
       --skip-shell) SKIP_SHELL=1 ;;
+      --git-accounts) GIT_ACCOUNTS_MODE="yes" ;;
+      --skip-git-accounts) GIT_ACCOUNTS_MODE="no" ;;
       -h|--help)
         usage
         exit 0
@@ -186,6 +192,13 @@ install_git_include() {
     return
   fi
 
+  while IFS= read -r include_path; do
+    if [ "$include_path" != "$GIT_CONFIG" ] && [[ "$include_path" == */dev-setup/config/git/gitconfig ]]; then
+      log "Removing stale git config include: $include_path"
+      run git config --global --unset-all include.path "$include_path"
+    fi
+  done < <(git config --global --get-all include.path 2>/dev/null || true)
+
   if git config --global --get-all include.path 2>/dev/null | grep -Fxq "$GIT_CONFIG"; then
     log "Git config include already present"
     return
@@ -205,6 +218,53 @@ install_shell_configs() {
   link_file "$GIT_ACCOUNT_SCRIPT" "$HOME/.local/bin/git-account"
   install_zshrc_block
   install_git_include
+}
+
+configure_git_accounts() {
+  [ "$SKIP_SHELL" -eq 1 ] && return
+  [ "$GIT_ACCOUNTS_MODE" = "no" ] && return
+
+  if [ "$DRY_RUN" -eq 1 ]; then
+    warn "Would ask whether to configure Git accounts"
+    return
+  fi
+
+  if [ "$GIT_ACCOUNTS_MODE" = "yes" ]; then
+    "$GIT_ACCOUNT_SCRIPT" init
+    return
+  fi
+
+  if [ ! -t 0 ] || [ ! -t 1 ]; then
+    return
+  fi
+
+  local existing_accounts=""
+  if [ -d "$HOME/.config/dev-setup/git/accounts" ]; then
+    existing_accounts="$(find "$HOME/.config/dev-setup/git/accounts" -maxdepth 1 -type f -name '*.gitconfig' -print -quit 2>/dev/null || true)"
+  fi
+
+  local prompt="Configure Git accounts now?"
+  local default="Y"
+  if [ -n "$existing_accounts" ]; then
+    prompt="Reconfigure Git accounts now?"
+    default="N"
+  fi
+
+  local answer
+  local suffix
+  if [ "$default" = "Y" ]; then
+    suffix="Y/n"
+  else
+    suffix="y/N"
+  fi
+
+  read -r -p "$prompt [$suffix]: " answer
+  answer="${answer:-$default}"
+
+  case "$answer" in
+    Y|y|yes|YES) "$GIT_ACCOUNT_SCRIPT" init ;;
+    *) log "Skipping Git account setup" ;;
+  esac
 }
 
 install_fzf_extras() {
@@ -227,6 +287,7 @@ main() {
   brew_bundle
   install_fzf_extras
   install_shell_configs
+  configure_git_accounts
 
   log "Done"
   printf 'Open a new terminal or run: source ~/.zshrc\n'

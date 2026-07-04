@@ -24,12 +24,6 @@
 	line-numbers = true
 	side-by-side = false
 
-[includeIf "gitdir:~/workspace/welda/"]
-	path = ~/.config/dev-setup/git/accounts/welda.gitconfig
-
-[includeIf "gitdir:~/workspace/ruccess/"]
-	path = ~/.config/dev-setup/git/accounts/ruccess.gitconfig
-
 [alias]
 	st = status --short --branch
 	co = checkout

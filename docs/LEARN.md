@@ -41,17 +41,41 @@ devrepo
 
 1. Homebrew로 설치할 앱과 CLI 도구 목록을 관리합니다.
 2. zsh, starship, git 설정을 링크합니다.
-3. `welda` 회사 계정과 `ruccess` 개인 계정용 Git 설정을 분리해서 관리합니다.
+3. Git 계정별 폴더와 SSH 설정을 입력받아 분리해서 관리합니다.
 
 ## 처음 실행
 
 기본 설치:
 
 ```zsh
-cd ~/workspace/ruccess/dev-setup
+cd path/to/dev-setup
 ./install.sh
 source ~/.zshrc
 ./scripts/doctor.sh
+```
+
+내 현재 로컬 경로 예시는:
+
+```zsh
+cd ~/workspace/ruccess/dev-setup
+```
+
+설치 중 Git 계정 설정을 바로 진행할 수도 있습니다.
+
+```zsh
+./install.sh --git-accounts
+```
+
+이때 아래 내용을 물어봅니다:
+
+```text
+Workspace root              예: ~/workspace
+Number of Git accounts      예: 2
+Account id                  예: ruccess, welda
+Git name                    커밋 작성자 이름
+Git email                   커밋 작성자 이메일
+GitHub username/org login   GitHub 사용자명 또는 조직명
+Repo directory              해당 계정 repo들을 모아둘 폴더
 ```
 
 앱 설치 없이 CLI와 설정만 보고 싶으면:
@@ -319,9 +343,25 @@ git diff
 git show
 ```
 
-## Welda Git 계정과 Ruccess Git 계정
+## Git 계정별 폴더 나누기
 
-회사 계정은 `welda`, 개인 계정은 `ruccess`로 관리합니다.
+이 설정은 계정 이름을 고정하지 않습니다.
+
+예를 들어 내 컴퓨터에서는 이렇게 쓸 수 있습니다:
+
+```text
+ruccess -> ~/workspace/ruccess
+welda   -> ~/workspace/welda
+```
+
+다른 사람은 이렇게 쓸 수도 있습니다:
+
+```text
+personal -> ~/workspace/personal
+company  -> ~/workspace/company
+```
+
+중요한 건 설치할 때 직접 계정 ID와 폴더를 정한다는 점입니다.
 
 처음 설정:
 
@@ -332,16 +372,17 @@ git-account init
 이 명령은 아래 파일들을 만듭니다:
 
 ```text
-~/.config/dev-setup/git/accounts/welda.gitconfig
-~/.config/dev-setup/git/accounts/ruccess.gitconfig
+~/.config/dev-setup/git/accounts/<account>.gitconfig
 ```
 
-기본 규칙:
+예시:
 
 ```text
-~/workspace/welda/      회사 계정
-~/workspace/ruccess/    개인 계정
+~/.config/dev-setup/git/accounts/ruccess.gitconfig
+~/.config/dev-setup/git/accounts/welda.gitconfig
 ```
+
+그리고 각 계정에 입력한 repo 폴더 아래에서는 해당 Git 계정이 자동으로 적용됩니다.
 
 현재 repo에서 어떤 Git 계정이 적용되는지 확인:
 
@@ -383,8 +424,14 @@ GitHub에는 공개키만 등록합니다. 개인키는 절대 GitHub나 repo에
 SSH remote는 이런 식으로 사용합니다:
 
 ```text
+git@github.com-<account>:owner/repo.git
+```
+
+예시:
+
+```text
 git@github.com-welda:welda/repo.git
-git@github.com-ruccess:ruccess/repo.git
+git@github.com-ruccess:ruccess/dev-setup.git
 ```
 
 기존 GitHub remote를 회사 계정용으로 바꾸기:

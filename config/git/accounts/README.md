@@ -12,4 +12,4 @@ Run:
 git-account init
 ```
 
-The generated files are included conditionally by directory, so Welda repos and Ruccess repos can use different Git identities without changing global config by hand.
+The generated files are included conditionally by directory, so each workspace folder can use its own Git identity without changing global config by hand.

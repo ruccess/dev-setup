@@ -2,12 +2,12 @@
 
 Fresh macOS development setup for terminal-first work.
 
-This repo installs a focused CLI stack, links reusable shell config, and adds a small managed block to `~/.zshrc`. It is safe to run more than once.
+This repo installs a focused CLI stack, links reusable shell config, and guides Git account/workspace setup. It is safe to run more than once.
 
 ## Quick Start
 
 ```zsh
-cd ~/workspace/ruccess/dev-setup
+cd path/to/dev-setup
 ./install.sh --dry-run
 ./install.sh
 ```
@@ -59,7 +59,12 @@ git-account     # manage Welda/Ruccess Git accounts
 
 ## Git Accounts
 
-This setup supports separate Welda and Ruccess Git identities.
+This setup supports multiple Git identities. During setup, you choose account IDs and workspace folders. For example, this machine uses:
+
+```text
+ruccess -> ~/workspace/ruccess
+welda   -> ~/workspace/welda
+```
 
 Run:
 
@@ -70,15 +75,13 @@ git-account init
 It creates local account configs under:
 
 ```text
-~/.config/dev-setup/git/accounts/welda.gitconfig
-~/.config/dev-setup/git/accounts/ruccess.gitconfig
+~/.config/dev-setup/git/accounts/<account>.gitconfig
 ```
 
-By default, repos under these directories use the matching identity:
+Repos under the folder you choose for an account use that account automatically.
 
 ```text
-~/workspace/welda/
-~/workspace/ruccess/
+~/workspace/<account>/
 ```
 
 For an existing repo outside those folders:
@@ -117,7 +120,7 @@ docs/LEARN.md                    Learning guide and cheat sheet
 config/zsh/dev-setup.zsh         Shell aliases and integrations
 config/starship/starship.toml    Prompt config
 config/git/gitconfig             Git aliases and delta config
-scripts/git-accounts.sh          Welda/Ruccess Git account manager
+scripts/git-accounts.sh          Multi-account Git manager
 scripts/doctor.sh                Check installed tools
 ```
 

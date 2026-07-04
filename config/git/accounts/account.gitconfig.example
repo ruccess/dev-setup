@@ -1,0 +1,12 @@
+[user]
+	name = Your Name
+	email = you@example.com
+
+[github]
+	user = your-github-user-or-org
+
+[dev-setup]
+	directory = ~/workspace/account
+	githubHost = github.com-account
+	identityFile = ~/.ssh/id_ed25519_account
+

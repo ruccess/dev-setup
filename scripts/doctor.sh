@@ -66,14 +66,20 @@ fi
 
 printf '\nGit account configs\n\n'
 
-for account in welda ruccess; do
-  config="$HOME/.config/dev-setup/git/accounts/$account.gitconfig"
-  if [ -f "$config" ]; then
+account_dir="$HOME/.config/dev-setup/git/accounts"
+
+if [ -d "$account_dir" ] && find "$account_dir" -maxdepth 1 -type f -name '*.gitconfig' -print -quit | grep -q .; then
+  find "$account_dir" -maxdepth 1 -type f -name '*.gitconfig' -print | sort | while IFS= read -r config; do
+    account="$(basename "$config" .gitconfig)"
     email="$(git config --file "$config" --get user.email 2>/dev/null || true)"
+    directory="$(git config --file "$config" --get dev-setup.directory 2>/dev/null || true)"
     printf 'ok      %-12s %s\n' "$account" "${email:-$config}"
-  else
-    printf 'todo    %-12s run: git-account init\n' "$account"
-  fi
-done
+    if [ -n "$directory" ]; then
+      printf '        %-12s %s\n' "" "$directory"
+    fi
+  done
+else
+  printf 'todo    %-12s run: git-account init\n' "accounts"
+fi
 
 exit "$missing"
