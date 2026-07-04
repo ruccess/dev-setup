@@ -90,7 +90,7 @@ source ~/.zshrc
 내 현재 로컬 경로 예시는:
 
 ```zsh
-cd ~/workspace/ruccess/dev-setup
+cd ~/workspace/personal/dev-setup
 ```
 
 설치 중 Git 계정 설정을 바로 진행할 수도 있습니다.
@@ -104,7 +104,7 @@ cd ~/workspace/ruccess/dev-setup
 ```text
 Workspace root              예: ~/workspace
 Number of Git accounts      예: 2
-Account id                  예: ruccess, welda
+Account id                  예: personal, work
 Git name                    커밋 작성자 이름
 Git email                   커밋 작성자 이메일
 GitHub username/org login   GitHub 사용자명 또는 조직명
@@ -412,7 +412,7 @@ p ~/code
 폴더를 만들고 바로 들어가기:
 
 ```zsh
-mkcd ~/workspace/ruccess/new-project
+mkcd ~/workspace/personal/new-project
 ```
 
 `zoxide`로 자주 가는 폴더에 빠르게 이동:
@@ -530,18 +530,18 @@ git show
 
 이 설정은 계정 이름을 고정하지 않습니다.
 
-예를 들어 내 컴퓨터에서는 이렇게 쓸 수 있습니다:
-
-```text
-ruccess -> ~/workspace/ruccess
-welda   -> ~/workspace/welda
-```
-
-다른 사람은 이렇게 쓸 수도 있습니다:
+예를 들어 이렇게 쓸 수 있습니다:
 
 ```text
 personal -> ~/workspace/personal
-company  -> ~/workspace/company
+work     -> ~/workspace/work
+```
+
+팀이나 고객사 단위로 더 나누고 싶으면 이렇게 쓸 수도 있습니다:
+
+```text
+client-a    -> ~/workspace/client-a
+open-source -> ~/workspace/open-source
 ```
 
 중요한 건 설치할 때 직접 계정 ID와 폴더를 정한다는 점입니다.
@@ -561,8 +561,8 @@ git-account init
 예시:
 
 ```text
-~/.config/dev-setup/git/accounts/ruccess.gitconfig
-~/.config/dev-setup/git/accounts/welda.gitconfig
+~/.config/dev-setup/git/accounts/personal.gitconfig
+~/.config/dev-setup/git/accounts/work.gitconfig
 ```
 
 그리고 각 계정에 입력한 repo 폴더 아래에서는 해당 Git 계정이 자동으로 적용됩니다.
@@ -571,33 +571,33 @@ git-account init
 
 ```zsh
 git-account current
-git-account current ~/workspace/welda/api
+git-account current ~/workspace/work/api
 ```
 
 특정 repo 하나를 회사 계정으로 고정:
 
 ```zsh
-git-account set-repo welda ~/workspace/welda/api
+git-account set-repo work ~/workspace/work/api
 ```
 
 특정 repo 하나를 개인 계정으로 고정:
 
 ```zsh
-git-account set-repo ruccess ~/workspace/ruccess/dev-setup
+git-account set-repo personal ~/workspace/personal/dev-setup
 ```
 
 특정 폴더 아래 repo 전체에 계정 규칙 추가:
 
 ```zsh
-git-account include welda ~/workspace/welda
-git-account include ruccess ~/workspace/ruccess
+git-account include work ~/workspace/work
+git-account include personal ~/workspace/personal
 ```
 
 GitHub용 SSH key 만들기:
 
 ```zsh
-git-account key welda
-git-account key ruccess
+git-account key work
+git-account key personal
 ```
 
 이 명령은 공개키를 출력하고, 가능하면 클립보드에도 복사합니다.
@@ -613,20 +613,20 @@ git@github.com-<account>:owner/repo.git
 예시:
 
 ```text
-git@github.com-welda:welda/repo.git
-git@github.com-ruccess:ruccess/dev-setup.git
+git@github.com-work:<org-or-user>/repo.git
+git@github.com-personal:<github-user>/dev-setup.git
 ```
 
 기존 GitHub remote를 회사 계정용으로 바꾸기:
 
 ```zsh
-git-account remote welda origin ~/workspace/welda/api
+git-account remote work origin ~/workspace/work/api
 ```
 
 기존 GitHub remote를 개인 계정용으로 바꾸기:
 
 ```zsh
-git-account remote ruccess origin ~/workspace/ruccess/dev-setup
+git-account remote personal origin ~/workspace/personal/dev-setup
 ```
 
 ## 런타임 버전 관리
@@ -839,6 +839,25 @@ nvc .
 
 기본 `nvim`으로 정착하고 싶다면 충분히 써본 뒤에 `~/.config/lazyvim` 같은 프로필 폴더를 `~/.config/nvim`으로 옮기면 됩니다.
 
+## GitHub CLI
+
+`gh`는 GitHub를 터미널에서 다루는 공식 CLI입니다.
+
+처음 로그인:
+
+```zsh
+gh auth login
+```
+
+자주 쓰는 명령:
+
+```zsh
+gh repo view --web
+gh pr list
+gh pr checkout 123
+gh workflow list
+```
+
 ## 프로젝트 명령어 관리
 
 `just`는 프로젝트별 자주 쓰는 명령어를 `justfile`에 모아두는 도구입니다.
@@ -874,7 +893,7 @@ just test
 예시:
 
 ```zsh
-gum choose welda ruccess
+gum choose work personal
 gum confirm "계속할까요?"
 gum input --placeholder "브랜치 이름"
 ```
@@ -963,8 +982,8 @@ git config --show-origin --get user.email
 SSH 접속이 안 되면:
 
 ```zsh
-ssh -T git@github.com-ruccess
-ssh -T git@github.com-welda
+ssh -T git@github.com-personal
+ssh -T git@github.com-work
 ```
 
 GitHub에 공개키가 등록되어 있는지도 확인합니다.

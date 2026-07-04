@@ -1,6 +1,6 @@
 ---
 name: dev-setup
-description: Use this skill when working in the ruccess/dev-setup repository to install, extend, troubleshoot, or document a macOS developer environment with Homebrew sections, zsh aliases, Git account separation, Zellij/tmux workspaces, Claude Code, and Neovim starter profiles.
+description: Use this skill when working in a dev-setup repository to install, extend, troubleshoot, or document a generic macOS developer environment with Homebrew sections, zsh aliases, Git account separation, Zellij/tmux workspaces, Claude Code, GitHub CLI, and Neovim starter profiles.
 ---
 
 # dev-setup
@@ -99,25 +99,25 @@ git-account list
 git-account current
 ```
 
-이 머신의 대표 예시는 다음과 같습니다.
+대표 예시는 다음과 같습니다.
 
 ```text
-ruccess -> ~/workspace/ruccess
-welda   -> ~/workspace/welda
+personal -> ~/workspace/personal
+work     -> ~/workspace/work
 ```
 
 GitHub SSH 키:
 
 ```zsh
-git-account key ruccess
-git-account key welda
+git-account key personal
+git-account key work
 ```
 
 SSH remote는 계정별 host alias를 사용합니다.
 
 ```text
-git@github.com-ruccess:ruccess/dev-setup.git
-git@github.com-welda:welda/repo.git
+git@github.com-personal:<github-user>/dev-setup.git
+git@github.com-work:<org-or-user>/repo.git
 ```
 
 push가 `Permission denied (publickey)`로 실패하면 `~/.ssh/id_ed25519_<account>.pub` 공개키를 GitHub 계정에 등록하도록 안내합니다.

@@ -330,6 +330,14 @@ git-account current
 | hyperfine | 명령어 실행 시간 벤치마크 | `hyperfine 'npm test'` |
 | xh | HTTP client | `xh GET https://example.com` |
 
+`gh`로 GitHub 로그인을 해두면 repo 생성, PR 확인, workflow 확인을 터미널에서 바로 할 수 있습니다.
+
+```zsh
+gh auth login
+gh repo view --web
+gh pr list
+```
+
 ## 설치 후 자주 쓰는 명령어
 
 ```zsh
@@ -360,8 +368,8 @@ nvl             # LazyVim 프로필로 nvim 실행
 예시:
 
 ```text
-ruccess -> ~/workspace/ruccess
-welda   -> ~/workspace/welda
+personal -> ~/workspace/personal
+work     -> ~/workspace/work
 ```
 
 초기 설정:
@@ -380,33 +388,33 @@ git-account init
 
 ```zsh
 git-account current
-git-account current ~/workspace/welda/api
+git-account current ~/workspace/work/api
 ```
 
 특정 repo에 계정 지정:
 
 ```zsh
-git-account set-repo welda ~/workspace/welda/api
+git-account set-repo work ~/workspace/work/api
 ```
 
 GitHub SSH 키 생성:
 
 ```zsh
-git-account key welda
-git-account key ruccess
+git-account key work
+git-account key personal
 ```
 
 SSH remote는 계정별 host alias를 씁니다.
 
 ```text
-git@github.com-welda:welda/repo.git
-git@github.com-ruccess:ruccess/dev-setup.git
+git@github.com-work:<org-or-user>/repo.git
+git@github.com-personal:<github-user>/dev-setup.git
 ```
 
 기존 remote를 계정 alias로 바꾸기:
 
 ```zsh
-git-account remote ruccess origin ~/workspace/ruccess/dev-setup
+git-account remote personal origin ~/workspace/personal/dev-setup
 ```
 
 `Permission denied (publickey)`가 나오면 해당 계정의 `.pub` 공개키를 GitHub에 등록해야 합니다.
@@ -472,15 +480,15 @@ brew bundle check --file Brewfile
 remote 예시:
 
 ```zsh
-git remote add origin git@github.com-ruccess:ruccess/dev-setup.git
+git remote add origin git@github.com-personal:<github-user>/dev-setup.git
 git push -u origin main
 ```
 
 SSH 인증이 실패하면:
 
 ```zsh
-ssh -T git@github.com-ruccess
-cat ~/.ssh/id_ed25519_ruccess.pub
+ssh -T git@github.com-personal
+cat ~/.ssh/id_ed25519_personal.pub
 ```
 
-출력된 공개키를 GitHub `ruccess` 계정에 등록합니다.
+출력된 공개키를 해당 GitHub 계정에 등록합니다.

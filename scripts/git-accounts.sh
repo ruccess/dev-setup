@@ -29,8 +29,8 @@ Examples:
   git-account init
   git-account list
   git-account current
-  git-account set-repo ruccess ~/workspace/ruccess/dev-setup
-  git-account remote welda origin ~/workspace/welda/api
+  git-account set-repo personal ~/workspace/personal/dev-setup
+  git-account remote work origin ~/workspace/work/api
 
 SSH remote format:
   git@github.com-<account>:owner/repo.git
@@ -292,7 +292,7 @@ init_accounts() {
   fi
 
   printf '\nAccount IDs become folder names, SSH aliases, and config filenames.\n'
-  printf 'Examples: ruccess, welda, personal, work\n\n'
+  printf 'Examples: personal, work, client-a, open-source\n\n'
 
   for ((i = 1; i <= count; i++)); do
     printf 'Account %s\n' "$i"
